@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<metadata xml:lang="en">
+<Esri>
+<CreaDate>20250507</CreaDate>
+<CreaTime>13473200</CreaTime>
+<ArcGISFormat>1.0</ArcGISFormat>
+<SyncOnce>TRUE</SyncOnce>
+</Esri>
+</metadata>

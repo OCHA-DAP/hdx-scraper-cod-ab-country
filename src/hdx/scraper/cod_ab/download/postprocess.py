@@ -1,15 +1,15 @@
 from pathlib import Path
 
 from geopandas import GeoDataFrame, read_file
+from hdx.location.country import Country
 from pandas import to_datetime
-from pycountry import countries
 
 
 def add_iso_codes(gdf: GeoDataFrame, file_path: Path) -> GeoDataFrame:
     """Adds ISO codes to a GeoDataFrame based on filename."""
     iso3 = file_path.stem[0:3].upper()
     gdf["iso3"] = iso3
-    gdf["iso2"] = countries.get(alpha_3=iso3).alpha_2
+    gdf["iso2"] = Country.get_iso2_from_iso3(iso3)
     return gdf
 
 

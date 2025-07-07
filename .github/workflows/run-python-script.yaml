@@ -2,8 +2,7 @@
 name: Run script
 on:
   workflow_dispatch: # add run button in github
-  schedule:
-    - cron: "32 10 * * *"
+
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -12,7 +11,14 @@ jobs:
       - name: Set up Python 3.x
         uses: actions/setup-python@v5
         with:
-          python-version: "3.x"
+          python-version: "3.13"
+      - name: Install GDAL
+        run: |
+          sudo apt-add-repository ppa:ubuntugis/ubuntugis-unstable
+          sudo apt-get update
+          sudo apt-get install -y \
+            gdal-bin \
+            libgdal-dev
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -24,9 +30,13 @@ jobs:
           HDX_KEY: ${{ secrets.HDX_BOT_SCRAPERS_API_TOKEN }}
           PREPREFIX: ${{ vars.HDX_USER_AGENT_PREPREFIX }}
           USER_AGENT: ${{ vars.USER_AGENT }}
-          EXTRA_PARAMS: ${{ vars.EXTRA_PARAMS }}
+          ARCGIS_SERVER: ${{ secrets.ARCGIS_SERVER }}
+          ARCGIS_USERNAME: ${{ secrets.ARCGIS_USERNAME }}
+          ARCGIS_PASSWORD: ${{ secrets.ARCGIS_PASSWORD }}
+          COD_META_WORKBOOK: ${{ secrets.COD_META_WORKBOOK }}
+          COD_META_SHEET: ${{ secrets.COD_META_SHEET }}
         run: |
-          python -m hdx.scraper.{{cookiecutter.scraper_name}}
+          python -m hdx.scraper.cod_ab
       - name: Send mail
         if: failure()
         uses: dawidd6/action-send-mail@v3

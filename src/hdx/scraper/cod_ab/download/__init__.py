@@ -1,12 +1,16 @@
+from pathlib import Path
+
+from hdx.utilities.retriever import Retrieve
+
 from . import metadata, ogr2ogr, points, postprocess
-from hdx.scraper.cod_ab.config import data_dir, services_url
+from hdx.scraper.cod_ab.config import services_url
 
 
-def download_polygons(iso3: str) -> None:
+def download_polygons(iso3: str, retriever: Retrieve, data_dir: Path) -> None:
     """Download polygons from ArcGIS server."""
     points_path = data_dir / iso3.lower() / f"{iso3.lower()}_adminpoints.parquet"
     points_path.unlink(missing_ok=True)
-    indexes = metadata.polygons(iso3)
+    indexes = metadata.polygons(iso3, retriever)
     for lvl, index in enumerate(indexes):
         url = f"{services_url}/cod_{iso3.lower()}_ab_standardized/FeatureServer/{index}"
         file_path = data_dir / iso3.lower() / f"{iso3.lower()}_admin{lvl}"
@@ -15,9 +19,9 @@ def download_polygons(iso3: str) -> None:
         points.to_points(file_path)
 
 
-def download_lines(iso3: str) -> None:
+def download_lines(iso3: str, retriever: Retrieve, data_dir: Path) -> None:
     """Download lines from ArcGIS server."""
-    indexes = metadata.lines(iso3)
+    indexes = metadata.lines(iso3, retriever)
     for index in indexes:
         url = f"{services_url}/cod_{iso3.lower()}_ab_standardized/FeatureServer/{index}"
         file_path = data_dir / iso3.lower() / f"{iso3.lower()}_adminlines"
@@ -25,9 +29,9 @@ def download_lines(iso3: str) -> None:
         postprocess.to_parquet(file_path)
 
 
-def download_points(iso3: str) -> None:
+def download_points(iso3: str, retriever: Retrieve, data_dir: Path) -> None:
     """Download points from ArcGIS server."""
-    indexes = metadata.points(iso3)
+    indexes = metadata.points(iso3, retriever)
     for index in indexes:
         url = f"{services_url}/cod_{iso3.lower()}_ab_standardized/FeatureServer/{index}"
         file_path = data_dir / iso3.lower() / f"{iso3.lower()}_adminpoints"
@@ -35,8 +39,8 @@ def download_points(iso3: str) -> None:
         postprocess.to_parquet(file_path)
 
 
-def main(iso3: str) -> None:
+def main(iso3: str, retriever: Retrieve, data_dir: Path) -> None:
     """Entrypoint for the module."""
-    download_polygons(iso3)
-    download_lines(iso3)
-    download_points(iso3)
+    download_polygons(iso3, retriever, data_dir)
+    download_lines(iso3, retriever, data_dir)
+    download_points(iso3, retriever, data_dir)

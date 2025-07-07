@@ -1,11 +1,8 @@
 license_id: cc-by-igo
 methodology: Other
-methodology_other: Other
-caveats: None
-dataset_source: OCHA Field Information Services Section (FISS)
+methodology_other: Prepared by UN-OCHA
 package_creator: HDX Data Systems Team
 private: False
 maintainer: maxmalynowsky
-owner_org: ocha-fiss
 data_update_frequency: 365
-notes: dataset notes
+subnational: "1"

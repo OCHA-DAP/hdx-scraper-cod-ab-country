@@ -1,5 +1,5 @@
 from geopandas import GeoDataFrame
-from pycountry import countries
+from hdx.location.country import Country
 
 from hdx.scraper.cod_ab.utils import get_pcode_columns, is_empty
 
@@ -17,7 +17,7 @@ def main(iso3: str, gdfs: list[GeoDataFrame]) -> list[dict]:
     """
 
     def not_iso(value: str | None) -> bool:
-        iso2 = countries.get(alpha_3=iso3).alpha_2
+        iso2 = Country.get_iso2_from_iso3(iso3)
         if iso2 and isinstance(value, str) and value.strip():
             return not value.startswith((iso3, iso2))
         return False

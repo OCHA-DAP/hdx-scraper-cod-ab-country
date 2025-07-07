@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from geopandas import read_parquet
 from pandas import DataFrame
 
@@ -13,10 +15,10 @@ from . import (
     table_other,
     table_pcodes,
 )
-from hdx.scraper.cod_ab.config import ADMIN_LEVELS, checks_config, data_dir
+from hdx.scraper.cod_ab.config import ADMIN_LEVELS, checks_config
 
 
-def create_output(iso3: str, checks: list) -> None:
+def create_output(iso3: str, checks: list, data_dir: Path) -> None:
     """Create CSV from registered checks."""
     output = None
     for _, results in checks:
@@ -31,7 +33,7 @@ def create_output(iso3: str, checks: list) -> None:
         output.to_csv(dest, encoding="utf-8-sig", index=False)
 
 
-def main(iso3: str) -> None:
+def main(iso3: str, data_dir: Path) -> None:
     """Summarizes and describes the data contained within downloaded boundaries.
 
     1. Create an iterable with each item containing the following (check_function,
@@ -75,4 +77,4 @@ def main(iso3: str) -> None:
     for function, results in checks:
         result = function.main(iso3, gdfs)
         results.append(result)
-    create_output(iso3, checks)
+    create_output(iso3, checks, data_dir)

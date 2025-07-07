@@ -2,8 +2,6 @@ from pathlib import Path
 from shutil import rmtree
 from subprocess import run
 
-from hdx.scraper.cod_ab.config import data_dir
-
 
 def to_multilayer(src_dataset: Path, dst_dataset: Path, *, multi: bool) -> None:
     """Uses OGR2OGR to turn a GeoParquet into a generic layer."""
@@ -37,7 +35,7 @@ def to_multilayer(src_dataset: Path, dst_dataset: Path, *, multi: bool) -> None:
     )
 
 
-def main(iso3: str) -> None:
+def main(iso3: str, data_dir: Path) -> None:
     """Convert geometries into multiple formats."""
     for ext, multi in [
         ("gdb", True),

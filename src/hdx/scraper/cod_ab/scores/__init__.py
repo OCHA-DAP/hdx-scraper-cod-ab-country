@@ -1,4 +1,5 @@
 from logging import getLogger
+from pathlib import Path
 
 from . import (
     geometry_topology,
@@ -10,13 +11,12 @@ from . import (
     table_names,
     table_pcodes,
 )
-from hdx.scraper.cod_ab.config import data_dir
 from hdx.scraper.cod_ab.utils import read_csv
 
 logger = getLogger(__name__)
 
 
-def main(iso3: str) -> float:
+def main(iso3: str, data_dir: Path) -> float:
     """Applies scoring to the summarized values in "checks.csv".
 
     1. Create an iterable with each item containing the scoring function.
@@ -26,7 +26,7 @@ def main(iso3: str) -> float:
     3. After all the scoring has been performed, join the DataFrames together by ISO3
     and admin level.
 
-    4. Output the final result to Excel: "data/tables/cod_ab_data_quality.xlsx".
+    4. Output the final result to Excel: "saved_data/tables/cod_ab_data_quality.xlsx".
     """
     # NOTE: Register scores here.
     score_functions = (
@@ -57,6 +57,6 @@ def main(iso3: str) -> float:
                 how="outer",
             )
     if output_table is not None:
-        output_table_agg = output.main(iso3, output_table)
+        output_table_agg = output.main(iso3, output_table, data_dir)
         return output_table_agg["score"].iloc[0]
     return 0.0

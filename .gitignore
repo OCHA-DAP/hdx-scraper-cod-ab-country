@@ -178,3 +178,6 @@ saved_data/
 
 # Ruff cache
 .ruff_cache
+
+# test results
+test-results.xml

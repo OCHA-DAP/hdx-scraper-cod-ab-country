@@ -1,6 +1,6 @@
-from pandas import DataFrame
+from pathlib import Path
 
-from hdx.scraper.cod_ab.config import data_dir
+from pandas import DataFrame
 
 
 def aggregate(checks: DataFrame) -> DataFrame:
@@ -19,7 +19,7 @@ def aggregate(checks: DataFrame) -> DataFrame:
     return checks.sort_values(by=["score", "iso3"])
 
 
-def main(iso3: str, checks: DataFrame) -> DataFrame:
+def main(iso3: str, checks: DataFrame, data_dir: Path) -> DataFrame:
     """Aggregates scores and outputs to an Excel workbook with red/amber/green coloring.
 
     1. Groups and averages the scores generated in this module and outputs as a CSV.

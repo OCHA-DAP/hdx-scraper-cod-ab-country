@@ -3,21 +3,26 @@ from re import sub
 from typing import Any
 
 import numpy as np
+from hdx.utilities.retriever import Retrieve
 from pandas import read_csv
 
 from hdx.scraper.cod_ab.metadata import config
 
 
-def get_meta(iso3: str = "") -> list[dict]:
+def get_meta(retriever: Retrieve, iso3: str = "") -> list[dict]:
     """Gets metadata from google sheets.
 
     Args:
+        retriever (Retrieve): Retriever object.
         iso3: iso3 value to filter by
 
     Returns:
         input list of data
     """
-    meta_list = read_csv(config.metadata_url, na_values=config.na_values)
+    csv_path = retriever.download_file(
+        config.metadata_url, filename=f"{iso3.lower()}_dynamic_ab_metadata.csv"
+    )
+    meta_list = read_csv(csv_path, na_values=config.na_values)
     if iso3:
         meta_list = meta_list[meta_list[config.ISO3] == iso3.upper()]
     return meta_list[config.meta_long_columns].to_dict("records")

@@ -1,9 +1,10 @@
 from geopandas import GeoDataFrame
+from hdx.location.country import Country
 from icu import USET_ADD_CASE_MAPPINGS, LocaleData, ULocaleDataExemplarSetType
 from langcodes import tag_is_valid
 
 from .table_names_config import auxiliary_codes, exclude_check, punctuation_set
-from hdx.scraper.cod_ab.config import LANGUAGE_COUNT, m49, official_languages
+from hdx.scraper.cod_ab.config import LANGUAGE_COUNT, official_languages
 
 
 def get_languages(gdf: GeoDataFrame) -> list[str]:
@@ -45,9 +46,11 @@ def is_invalid_adm0(lang: str, name: str | None, iso3: str) -> bool:
     """Checks if Admin 0 name is invalid."""
     if lang not in official_languages:
         return False
-    if iso3 in m49:
-        return name != m49[iso3][f"{lang}_short"]
-    return False
+    country_info = Country.get_country_info_from_iso3(iso3)
+    if not country_info:
+        return False
+    official_name = country_info[f"#country+alt+i_{lang}+name+v_m49"]
+    return name != official_name
 
 
 def is_upper(name: str | None) -> bool:

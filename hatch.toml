@@ -21,7 +21,7 @@ version_scheme = "python-simplified-semver"
 # Tests
 
 [envs.hatch-test]
-features = ["test"]
+features = ["dev"]
 
 [[envs.hatch-test.matrix]]
 python = ["3.13"]
@@ -34,4 +34,4 @@ run = """
 
 [envs.hatch-static-analysis]
 config-path = "none"
-dependencies = ["ruff==0.11.10"]
+dependencies = ["ruff==0.13.0"]

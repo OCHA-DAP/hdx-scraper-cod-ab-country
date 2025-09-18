@@ -80,11 +80,11 @@ you’ve introduced a new package to the source code (i.e. anywhere in `src/`),
 please add it to the `project.dependencies` section of `pyproject.toml` with
 any known version constraints.
 
-To add packages required only for testing, add them to the `test` section under
+To add packages required only for testing, add them to the `dev` section under
 `[project.optional-dependencies]`.
 
 Any changes to the dependencies will be automatically reflected in
-`requirements.txt` and `requirements-test.txt` with `pre-commit`, but you can
+`requirements.txt` and `requirements-dev.txt` with `pre-commit`, but you can
 re-generate the files without committing by executing:
 
 ```shell

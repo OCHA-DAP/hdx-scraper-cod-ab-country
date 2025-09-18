@@ -1,3 +1,5 @@
+# flake8: noqa: D103, PTH118, SLF001, FBT003, ANN001
+
 from os.path import join
 
 import pytest
@@ -10,37 +12,37 @@ from hdx.utilities.useragent import UserAgent
 
 
 @pytest.fixture(scope="session")
-def fixtures_dir():
+def fixtures_dir() -> str:
     return join("tests", "fixtures")
 
 
 @pytest.fixture(scope="session")
-def input_dir(fixtures_dir):
+def input_dir(fixtures_dir: str) -> str:
     return join(fixtures_dir, "input")
 
 
 @pytest.fixture(scope="session")
-def config_dir(fixtures_dir):
+def config_dir() -> str:
     return join("src", "hdx", "scraper", "cod_ab", "config")
 
 
-@pytest.fixture(scope="function")
-def read_dataset(monkeypatch):
-    def read_from_hdx(dataset_name):
+@pytest.fixture
+def read_dataset(monkeypatch) -> None:
+    def read_from_hdx(dataset_name: str) -> Dataset | None:
         return Dataset.load_from_json(
             join(
                 "tests",
                 "fixtures",
                 "input",
                 f"dataset-{dataset_name}.json",
-            )
+            ),
         )
 
     monkeypatch.setattr(Dataset, "read_from_hdx", staticmethod(read_from_hdx))
 
 
 @pytest.fixture(scope="session")
-def configuration(config_dir):
+def configuration() -> Configuration:
     UserAgent.set_global("test")
     Configuration._create(
         hdx_read_only=True,

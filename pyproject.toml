@@ -1,3 +1,9 @@
+#########################
+# Project Configuration #
+#########################
+
+# Project name and version needed to run tests
+
 [build-system]
 requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
@@ -5,26 +11,19 @@ build-backend = "hatchling.build"
 [project]
 name = "hdx-scraper-cod-ab"
 requires-python = ">=3.13"
+dynamic = ["version"]
 dependencies = [
-    "defusedxml",
-    "geopandas",
     "hdx-python-api",
     "hdx-python-country",
     "hdx-python-utilities",
     "httpx[http2]",
-    "langcodes",
+    "pandas",
     "pyarrow",
-    "pyicu",
     "python-dotenv",
     "quantulum3[classifier]",
     "tenacity",
     "tqdm",
 ]
-
-dynamic = ["version"]
-
-[project.optional-dependencies]
-test = ["pre-commit", "pytest-cov", "pytest", "ruff", "taskipy"]
 
 [dependency-groups]
 dev = ["pre-commit", "pytest-cov", "pytest", "ruff", "taskipy"]
@@ -33,6 +32,5 @@ dev = ["pre-commit", "pytest-cov", "pytest", "ruff", "taskipy"]
 # uv run task app
 app = "python -m hdx.scraper.cod_ab"
 test = "pytest --rootdir=. --junitxml=test-results.xml --cov --no-cov-on-fail --cov-report=lcov --cov-report=term-missing"
-export = "uv sync -q && uv export -q --no-emit-project --no-hashes --no-dev -o requirements.txt"
-export_test = "uv sync -q && uv export -q --no-emit-project --no-hashes -o requirements-test.txt"
+export = "uv sync -q && uv export -o requirements.txt -q --no-dev --no-emit-project --no-hashes && uv export -o requirements-dev.txt -q --no-emit-project --no-hashes"
 ruff = "ruff format && ruff check && ruff format"

@@ -1,44 +1,50 @@
+import logging
 import re
 from pathlib import Path
-from typing import Literal
 
-import pandas as pd
-from geopandas import GeoDataFrame
-from hdx.utilities.retriever import Retrieve
-from httpx import Client
-from pandas import DataFrame, to_datetime
+from httpx import Client, Response
+from pandas import read_parquet
+from tenacity import retry, stop_after_attempt, wait_fixed
 
 from .config import (
     ARCGIS_PASSWORD,
     ARCGIS_SERVER,
+    ARCGIS_SERVICE_REGEX,
+    ARCGIS_SERVICE_URL,
     ARCGIS_USERNAME,
-    services_url,
+    ATTEMPT,
+    EXPIRATION,
+    TIMEOUT,
+    WAIT,
+    iso3_exclude,
+    iso3_include,
 )
 
+logger = logging.getLogger(__name__)
 
-def read_csv(file_path: Path | str, *, datetime_to_date: bool = False) -> DataFrame:
-    """Pandas read CSV with columns converted to the best possible dtypes.
 
-    Args:
-        file_path: CSV file path to read.
-        datetime_to_date: Convert datetime to date, needed for export to Excel.
+@retry(stop=stop_after_attempt(ATTEMPT), wait=wait_fixed(WAIT))
+def client_get(url: str, params: dict | None = None) -> Response:
+    """HTTP GET with retries, waiting, and longer timeouts."""
+    with Client(http2=True, timeout=TIMEOUT) as client:
+        return client.get(url, params=params)
 
-    Returns:
-        Pandas DataFrame with converted dtypes.
-    """
-    df_csv = pd.read_csv(
-        file_path,
-        keep_default_na=False,
-        na_values=["", "#N/A"],
-    ).convert_dtypes()
-    for col in df_csv.select_dtypes(include=["string"]):
-        try:
-            df_csv[col] = to_datetime(df_csv[col], format="ISO8601")
-            if datetime_to_date:
-                df_csv[col] = df_csv[col].dt.date
-        except ValueError:
-            pass
-    return df_csv
+
+def get_metadata(data_dir: Path, iso3: str, version: str) -> dict:
+    """Get metadata for a country."""
+    df = read_parquet(data_dir / "metadata.parquet")
+    try:
+        return df[
+            (df["country_iso3"] == iso3) & (df["version"] == f"v{version}")
+        ].to_dict("records")[0]
+    except IndexError:
+        logger.exception("Metadata not found for %s v%s", iso3, version)
+        return {}
+
+
+def get_feature_server_url(iso3: str, version: str) -> str:
+    """Get a url for a feature server."""
+    return f"{ARCGIS_SERVICE_URL}/cod_ab_{iso3.lower()}_v_{version}/FeatureServer"
 
 
 def generate_token() -> str:
@@ -48,6 +54,7 @@ def generate_token() -> str:
         "username": ARCGIS_USERNAME,
         "password": ARCGIS_PASSWORD,
         "referer": f"{ARCGIS_SERVER}/portal",
+        "expiration": EXPIRATION,
         "f": "json",
     }
     with Client(http2=True) as client:
@@ -55,52 +62,22 @@ def generate_token() -> str:
         return r["token"]
 
 
-def get_iso3_list(retriever: Retrieve) -> list[str]:
-    """Gets a list of ISO3 codes available on the FIS ArcGIS server."""
-    params = {"f": "json", "token": generate_token()}
-    services = retriever.download_json(services_url, parameters=params)["services"]
-    p = re.compile(r"^Hosted\/cod_[a-z]{3}_ab_standardized$")
-    return [
-        x["name"][11:14].upper()
+def get_iso3_list(token: str) -> list[tuple[str, str]]:
+    """Get a list of ISO3 codes available on the FIS ArcGIS server."""
+    params = {"f": "json", "token": token}
+    services = client_get(ARCGIS_SERVICE_URL, params=params).json()["services"]
+    p = re.compile(ARCGIS_SERVICE_REGEX)
+    iso3_versions = [
+        (x["name"][14:17].upper(), x["name"][20:22])
         for x in services
         if x["type"] == "FeatureServer" and p.search(x["name"])
     ]
-
-
-def is_empty(string: str) -> bool:
-    """Checks if string is empty."""
-    return str(string).strip() == ""
-
-
-def get_name_columns(gdf: GeoDataFrame, admin_level: int) -> list[str]:
-    """Get all name columns for a GeoDataFrame of a specific admin level."""
-    return [
-        column
-        for column in gdf.columns
-        for level in range(admin_level + 1)
-        if column.startswith(f"adm{level}_name")
-    ]
-
-
-def get_pcode_columns(gdf: GeoDataFrame, admin_level: int) -> list[str]:
-    """Get all P-Code columns for a GeoDataFrame of a specific admin level."""
-    return [
-        column
-        for column in gdf.columns
-        for level in range(admin_level + 1)
-        if column == f"adm{level}_pcode"
-    ]
-
-
-def get_epsg_ease(min_lat: float, max_lat: float) -> Literal[6931, 6932, 6933]:
-    """Gets the code for appropriate Equal-Area Scalable Earth grid based on lat."""
-    latitude_poles = 80
-    latitude_equator = 0
-    epsg_ease_north = 6931
-    epsg_ease_south = 6932
-    epsg_ease_global = 6933
-    if max_lat >= latitude_poles and min_lat >= latitude_equator:
-        return epsg_ease_north
-    if min_lat <= -latitude_poles and max_lat <= latitude_equator:
-        return epsg_ease_south
-    return epsg_ease_global
+    latest_iso3_versions = {}
+    for iso3, version in iso3_versions:
+        if iso3_include and iso3 not in iso3_include:
+            continue
+        if iso3_exclude and iso3 in iso3_exclude:
+            continue
+        if iso3 not in latest_iso3_versions or version > latest_iso3_versions[iso3]:
+            latest_iso3_versions[iso3] = version
+    return list(latest_iso3_versions.items())

@@ -1,27 +1,6 @@
 fix = true
-target-version = "py313"
 exclude = ["_version.py"]
 
-[format]
-docstring-code-format = true
-
 [lint]
-# select = ["ALL"]
-# ignore = ["D100", "D104", "INP", "S603", "S607"]
-select = ["E", "F", "I"]
-ignore = ["E501"]
-
-[lint.pydocstyle]
-convention = "google"
-
-[lint.isort]
-known-local-folder = ["hdx.scraper.cod_ab"]
-known-third-party = [
-  "hdx.api",
-  "hdx.location",
-  "hdx.data",
-  "hdx.database",
-  "hdx.facades",
-  "hdx.scraper",
-  "hdx.utilities",
-]
+select = ["ALL"]
+ignore = ["D100", "INP001", "S603", "S607", "S608", "TID252"]

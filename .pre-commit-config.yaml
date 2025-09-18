@@ -1,38 +1,32 @@
 default_language_version:
   python: python3.13
 repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
-    hooks:
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
-      - id: check-ast
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.11.10
-    hooks:
-      - id: ruff-format
-      - id: ruff-check
-      - id: ruff-format
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.7.6
+    rev: 0.8.18
     hooks:
       - id: uv-sync
       - id: uv-export
         args:
           [
-            "-q",
-            "--no-emit-project",
-            "--no-hashes",
-            "--no-dev",
             "-o",
             "requirements.txt",
+            "-q",
+            "--no-dev",
+            "--no-emit-project",
+            "--no-hashes",
           ]
       - id: uv-export
         args:
           [
+            "-o",
+            "requirements-dev.txt",
             "-q",
             "--no-emit-project",
             "--no-hashes",
-            "-o",
-            "requirements-test.txt",
           ]
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.13.0
+    hooks:
+      - id: ruff-format
+      - id: ruff-check
+      - id: ruff-format

@@ -1,8 +1,7 @@
+cod_level: cod-enhanced
 license_id: cc-by-igo
+maintainer: maxmalynowsky
 methodology: Other
-methodology_other: Prepared by UN-OCHA
 package_creator: HDX Data Systems Team
 private: False
-maintainer: maxmalynowsky
-data_update_frequency: 365
 subnational: "1"

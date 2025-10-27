@@ -45,8 +45,7 @@ def download_metadata_table(data_dir: Path, url: str, token: str) -> None:
         ],
         check=False,
     )
-    # TODO (Max): change back to parquet once issue addressed:  # noqa: FIX002
-    # https://github.com/OSGeo/gdal/issues/13093
+    # TODO (@max): remove following once GDAL 3.11.5 available  # noqa: FIX002, TD003
     df = read_parquet(output_file)
     for col in df.columns:
         try:

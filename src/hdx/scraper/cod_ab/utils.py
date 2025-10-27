@@ -30,21 +30,22 @@ def client_get(url: str, params: dict | None = None) -> Response:
         return client.get(url, params=params)
 
 
-def get_metadata(data_dir: Path, iso3: str, version: str) -> dict:
+def get_metadata(data_dir: Path, iso3: str) -> dict:
     """Get metadata for a country."""
     df = read_parquet(data_dir / "metadata.parquet")
     try:
         return df[
-            (df["country_iso3"] == iso3) & (df["version"] == f"v{version}")
+            (df["country_iso3"] == iso3)
+            & ((df["version"] == "") | df["version"].isna())
         ].to_dict("records")[0]
     except IndexError:
-        logger.exception("Metadata not found for %s v%s", iso3, version)
+        logger.exception("Metadata not found for %s", iso3)
         return {}
 
 
-def get_feature_server_url(iso3: str, version: str) -> str:
+def get_feature_server_url(iso3: str) -> str:
     """Get a url for a feature server."""
-    return f"{ARCGIS_SERVICE_URL}/cod_ab_{iso3.lower()}_v_{version}/FeatureServer"
+    return f"{ARCGIS_SERVICE_URL}/cod_ab_{iso3.lower()}/FeatureServer"
 
 
 def generate_token() -> str:
@@ -62,22 +63,19 @@ def generate_token() -> str:
         return r["token"]
 
 
-def get_iso3_list(token: str) -> list[tuple[str, str]]:
-    """Get a list of ISO3 codes available on the FIS ArcGIS server."""
+def get_iso3_list(token: str) -> list[str]:
+    """Get a list of ISO3 codes available on the ArcGIS server."""
     params = {"f": "json", "token": token}
     services = client_get(ARCGIS_SERVICE_URL, params=params).json()["services"]
     p = re.compile(ARCGIS_SERVICE_REGEX)
-    iso3_versions = [
-        (x["name"][14:17].upper(), x["name"][20:22])
+    iso3_list = [
+        x["name"][14:17].upper()
         for x in services
         if x["type"] == "FeatureServer" and p.search(x["name"])
     ]
-    latest_iso3_versions = {}
-    for iso3, version in iso3_versions:
-        if iso3_include and iso3 not in iso3_include:
-            continue
-        if iso3_exclude and iso3 in iso3_exclude:
-            continue
-        if iso3 not in latest_iso3_versions or version > latest_iso3_versions[iso3]:
-            latest_iso3_versions[iso3] = version
-    return list(latest_iso3_versions.items())
+    return [
+        iso3
+        for iso3 in iso3_list
+        if (not iso3_include or iso3 in iso3_include)
+        and (not iso3_exclude or iso3 not in iso3_exclude)
+    ]

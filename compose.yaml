@@ -5,5 +5,5 @@ services:
     volumes:
       - ~/.hdx_configuration.yaml:/root/.hdx_configuration.yaml
       - ~/.useragents.yaml:/root/.useragents.yaml
-      - ./src:/usr/src/app/src
-      - ./saved_data:/usr/src/app/data
+      - ./src:/srv/src
+      - ./saved_data:/srv/saved_data

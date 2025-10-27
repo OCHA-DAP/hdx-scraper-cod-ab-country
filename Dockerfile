@@ -11,7 +11,7 @@ RUN --mount=type=bind,source=requirements.txt,target=requirements.txt \
     build-base \
     cmake \
     gdal-dev \
-    geos-dev \
+    geos-dev && \
     pip install --no-cache-dir -r requirements.txt && \
     apk del .build-deps && \
     rm -rf /root/.cache

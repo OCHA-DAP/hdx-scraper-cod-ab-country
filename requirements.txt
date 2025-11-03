@@ -202,7 +202,7 @@ ruamel-yaml-clib==0.2.14 ; python_full_version < '3.14' and platform_python_impl
     # via ruamel-yaml
 scikit-learn==1.7.2
     # via quantulum3
-scipy==1.16.2
+scipy==1.16.3
     # via
     #   quantulum3
     #   scikit-learn

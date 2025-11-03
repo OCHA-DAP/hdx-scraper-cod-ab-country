@@ -35,6 +35,7 @@ def add_metadata(iso3: str, metadata: dict, dataset: Dataset) -> Dataset | None:
     if not dataset_time_start or not dataset_time_end:
         logger.error("Dates not present for %s", iso3)
         return None
+    dataset_time_end = max(dataset_time_end, dataset_time_start)
     dataset.set_time_period(
         dataset_time_start.isoformat(),
         dataset_time_end.isoformat(),
@@ -44,8 +45,8 @@ def add_metadata(iso3: str, metadata: dict, dataset: Dataset) -> Dataset | None:
     dataset["dataset_source"] = metadata["source"]
     org_name = metadata["contributor"]
     org = Organization.autocomplete(org_name)
-    if len(org) != 1:
-        logger.error("Matching organization not found for %s", org_name)
+    if len(org) not in (1, 2):
+        logger.error("Matching organization not found for '%s'", org_name)
         return None
     dataset.set_organization(org[0])
     methodology_dataset = metadata["methodology_dataset"]
@@ -75,9 +76,14 @@ def get_notes(iso3: str, metadata: dict) -> str:
     for level in range(1, admin_levels + 1):
         admin_units = int(metadata[f"admin_{level}_count"])
         admin_type = metadata[f"admin_{level}_name"]
-        units_plural = "s" if admin_units != 1 else ""
+        admin_partial = (
+            level > int(metadata["admin_level_full"])
+            if metadata["admin_level_full"] != "Unknown"
+            else False
+        )
+        partial_text = ", partial coverage" if admin_partial else ""
         lines.append(
-            f"- Admin {level}: {admin_units} {admin_type}{units_plural}",
+            f"- Admin {level}: {admin_units} {admin_type}{partial_text}",
         )
     admin_notes = metadata["admin_notes"]
     if admin_notes:

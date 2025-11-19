@@ -7,29 +7,34 @@ from hdx.facades.infer_arguments import facade
 from hdx.utilities.path import wheretostart_tempdir_batch
 from tqdm import tqdm
 
-from . import download, formats
-from .config import ARCGIS_METADATA_URL
+from . import formats
 from .dataset import generate_dataset
-from .utils import generate_token, get_feature_server_url, get_iso3_list, get_metadata
+from .download.boundaries import download_boundaries
+from .download.metadata import download_metadata
+from .utils import generate_token, get_layer_list, get_metadata
 
 logger = logging.getLogger(__name__)
 cwd = Path(__file__).parent
 
 _USER_AGENT_LOOKUP = "hdx-scraper-cod-ab"
 _SAVED_DATA_DIR = (cwd / "../../../../saved_data").resolve()
-_UPDATED_BY_SCRIPT = "HDX Scraper: COD-AB"
+_UPDATED_BY_SCRIPT = "HDX Scraper: COD-AB Country"
 
 
-def create_country_dataset(info: dict, data_dir: Path, token: str, iso3: str) -> None:
+def create_country_dataset(
+    info: dict,
+    data_dir: Path,
+    token: str,
+    iso3: str,
+    version: str,
+) -> None:
     """Create a dataset for a country."""
-    iso3_dir = data_dir / iso3.lower()
+    iso3_dir = data_dir / "boundaries" / iso3.lower()
     rmtree(iso3_dir, ignore_errors=True)
     iso3_dir.mkdir(parents=True)
-    url = get_feature_server_url(iso3)
-    download.main(iso3_dir, url, token)
+    download_boundaries(iso3_dir, token, iso3, version)
     formats.main(iso3_dir, iso3)
-    download.cleanup(iso3_dir)
-    metadata = get_metadata(data_dir, iso3)
+    metadata = get_metadata(data_dir, iso3, version)
     dataset = generate_dataset(iso3_dir, iso3, metadata)
     if dataset:
         dataset.update_from_yaml(path=str(cwd / "config/hdx_dataset_static.yaml"))
@@ -51,13 +56,13 @@ def main(save: bool = True, use_saved: bool = False) -> None:  # noqa: FBT001, F
         data_dir = Path(_SAVED_DATA_DIR if save or use_saved else temp_dir)
         data_dir.mkdir(parents=True, exist_ok=True)
         token = generate_token()
-        iso3_list = get_iso3_list(token)
-        download.download_metadata_table(data_dir, ARCGIS_METADATA_URL, token)
-        pbar = tqdm(iso3_list)
-        for iso3 in pbar:
+        download_metadata(data_dir, token)
+        layer_list = get_layer_list(data_dir)
+        pbar = tqdm(layer_list)
+        for iso3, version in pbar:
             pbar.set_postfix_str(iso3)
-            create_country_dataset(info, data_dir, token, iso3)
-        download.cleanup_metadata(data_dir)
+            create_country_dataset(info, data_dir, token, iso3, version)
+        rmtree(data_dir)
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@
 packages = ["src/hdx"]
 
 [build.hooks.vcs]
-version-file = "src/hdx/scraper/cod_ab/_version.py"
+version-file = "src/hdx/scraper/cod_ab_country/_version.py"
 
 [metadata]
 allow-direct-references = true

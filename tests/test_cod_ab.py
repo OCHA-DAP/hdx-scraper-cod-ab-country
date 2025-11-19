@@ -10,8 +10,8 @@ from hdx.utilities.downloader import Download
 from hdx.utilities.path import temp_dir
 from hdx.utilities.retriever import Retrieve
 
-from hdx.scraper.cod_ab.dataset import generate_dataset
-from hdx.scraper.cod_ab.utils import get_iso3_list
+from hdx.scraper.cod_ab_country.dataset import generate_dataset
+from hdx.scraper.cod_ab_country.utils import get_iso3_list
 
 
 class TestCODAB:

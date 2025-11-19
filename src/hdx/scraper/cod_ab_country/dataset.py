@@ -30,8 +30,8 @@ def initialize_dataset(iso3: str) -> Dataset | None:
 
 def add_metadata(iso3: str, metadata: dict, dataset: Dataset) -> Dataset | None:
     """Add metadata to a dataset."""
-    dataset_time_start = metadata.get("date_valid_from")
-    dataset_time_end = metadata.get("date_reviewed")
+    dataset_time_start = metadata["date_valid_on"]
+    dataset_time_end = metadata["date_reviewed"] or dataset_time_start
     if not dataset_time_start or not dataset_time_end:
         logger.error("Dates not present for %s", iso3)
         return None
@@ -57,7 +57,7 @@ def add_metadata(iso3: str, metadata: dict, dataset: Dataset) -> Dataset | None:
     ]
     methodology = [x for x in methodology if x]
     dataset["methodology_other"] = "  \n  \n".join(methodology)
-    dataset["caveats"] = metadata["caveates"] or None
+    dataset["caveats"] = metadata["caveats"] or None
     dataset.add_tags(["administrative boundaries-divisions", "gazetteer"])
     return dataset
 
@@ -69,15 +69,15 @@ def get_notes(iso3: str, metadata: dict) -> str:
     admin_level_range = "0" if admin_levels == 0 else f"0-{admin_levels}"
     levels_plural = "s" if admin_levels != 1 else ""
     lines = [
-        f"{country_name} administrative level {admin_level_range} boundaries (COD-AB) dataset.",
+        f"{country_name} administrative level {admin_level_range} boundaries (COD-AB) dataset version {metadata['version'][1:]}.",
         "",
         f"This dataset is structured into {admin_levels} level{levels_plural}:",
     ]
     for level in range(1, admin_levels + 1):
-        admin_units = int(metadata[f"admin_{level}_count"])
+        admin_units = metadata[f"admin_{level}_count"]
         admin_type = metadata[f"admin_{level}_name"]
         admin_partial = (
-            level > int(metadata["admin_level_full"])
+            level > metadata["admin_level_full"]
             if metadata["admin_level_full"] != "Unknown"
             else False
         )
@@ -91,16 +91,27 @@ def get_notes(iso3: str, metadata: dict) -> str:
     lines.extend(["", "", "Dates associated with this dataset:"])
     date_format = "%d %B %Y"
     dates = [
-        f"- {metadata['date_source'].strftime(date_format)}: boundaries created by the source",
-        f"- {metadata['date_updated'].strftime(date_format)}: last edit to the dataset before publishing",
-        f"- {metadata['date_valid_from'].strftime(date_format)}: valid for use by the humanitarian community",
-        f"- {metadata['date_reviewed'].strftime(date_format)}: dataset reviewed for accuracy and completeness",
-        f"- {metadata['date_metadata'].strftime(date_format)}: this metadata updated",
+        f"- {metadata['date_source'].strftime(date_format)}: boundaries created by the source"
+        if metadata["date_source"]
+        else None,
+        f"- {metadata['date_updated'].strftime(date_format)}: last edit to the dataset before publishing"
+        if metadata["date_updated"]
+        else None,
+        f"- {metadata['date_valid_on'].strftime(date_format)}: valid for use by the humanitarian community"
+        if metadata["date_valid_on"]
+        else None,
+        f"- {metadata['date_reviewed'].strftime(date_format)}: dataset reviewed for accuracy and completeness"
+        if metadata["date_reviewed"]
+        else None,
+        f"- {metadata['date_metadata'].strftime(date_format)}: this metadata updated"
+        if metadata["date_metadata"]
+        else None,
     ]
+    dates = [x for x in dates if x]
     lines.extend(dates)
     vetting = [
         "",
-        "Quality assured, configured, and published by HDX and OCHA Field Information Services Section (FISS).",
+        "Quality assured, configured, and published by HDX and OCHA Field Information Services (FIS).",
     ]
     lines.extend(vetting)
     return "  \n".join(lines)

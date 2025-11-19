@@ -1,5 +1,5 @@
 services:
-  hdx-scraper-cod-ab:
+  hdx-scraper-cod-ab-country:
     build: .
     env_file: .env
     volumes:

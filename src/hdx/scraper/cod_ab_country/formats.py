@@ -33,6 +33,7 @@ def to_multilayer(src_dataset: Path, dst_dataset: Path, *, multi: bool) -> None:
     run(
         [
             *["gdal", "vector", "convert"],
+            "--quiet",
             *[src_dataset, dst_dataset],
             mode,
             *lco,

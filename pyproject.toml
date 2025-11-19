@@ -9,10 +9,11 @@ requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
-name = "hdx-scraper-cod-ab"
-requires-python = ">=3.13"
+name = "hdx-scraper-cod-ab-country"
+requires-python = "~=3.13.0"
 dynamic = ["version"]
 dependencies = [
+    "geopandas",
     "hdx-python-api",
     "hdx-python-country",
     "hdx-python-utilities",
@@ -30,7 +31,7 @@ dev = ["pre-commit", "pytest-cov", "pytest", "ruff", "taskipy"]
 
 [tool.taskipy.tasks]
 # uv run task app
-app = "python -m hdx.scraper.cod_ab"
+app = "python -m hdx.scraper.cod_ab_country"
 test = "pytest --rootdir=. --junitxml=test-results.xml --cov --no-cov-on-fail --cov-report=lcov --cov-report=term-missing"
 export = "uv sync -q && uv export -o requirements.txt -q --no-dev --no-emit-project --no-hashes && uv export -o requirements-dev.txt -q --no-emit-project --no-hashes"
 ruff = "ruff format && ruff check && ruff format"

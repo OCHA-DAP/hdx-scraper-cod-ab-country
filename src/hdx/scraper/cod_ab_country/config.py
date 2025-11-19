@@ -33,10 +33,9 @@ TIMEOUT = int(getenv("TIMEOUT", "60"))
 TIMEOUT_DOWNLOAD = int(getenv("TIMEOUT_DOWNLOAD", "600"))
 EXPIRATION = int(getenv("EXPIRATION", "1440"))  # minutes (1 day)
 
-ISO_3_LEN = 3
 iso3_include = [
-    x for x in getenv("ISO3_INCLUDE", "").upper().split(",") if len(x) == ISO_3_LEN
+    x.strip() for x in getenv("ISO3_INCLUDE", "").upper().split(",") if x.strip()
 ]
 iso3_exclude = [
-    x for x in getenv("ISO3_EXCLUDE", "").upper().split(",") if len(x) == ISO_3_LEN
+    x.strip() for x in getenv("ISO3_EXCLUDE", "").upper().split(",") if x.strip()
 ]

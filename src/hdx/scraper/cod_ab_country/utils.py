@@ -13,7 +13,6 @@ from .config import (
     EXPIRATION,
     TIMEOUT,
     WAIT,
-    iso3_exclude,
     iso3_include,
 )
 
@@ -50,23 +49,13 @@ def get_layer_list(data_dir: Path) -> list[tuple[str, str]]:
     ).itertuples(index=False, name=None)
     layer_list = []
     for iso3, version in layers:
-        exclude_version = ""
-        if iso3_exclude:
-            if any(x.startswith(iso3) and x != iso3 for x in iso3_exclude):
-                version_exclude = next(x for x in iso3_exclude if x.startswith(iso3))
-                version_exclude = version_exclude.split("_")[1].lower()
-                if version == version_exclude:
-                    exclude_version = version
-            elif iso3 in iso3_exclude:
-                continue
         if iso3_include:
             if any(x.startswith(iso3) and x != iso3 for x in iso3_include):
                 version_include = next(x for x in iso3_include if x.startswith(iso3))
                 version_include = version_include.split("_")[1].lower()
                 layer_list.append((iso3, version_include))
             elif iso3 in iso3_include:
-                if version != exclude_version:
-                    layer_list.append((iso3, version))
+                layer_list.append((iso3, version))
     return layer_list
 
 

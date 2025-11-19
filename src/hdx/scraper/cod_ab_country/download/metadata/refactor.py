@@ -3,6 +3,10 @@ from pathlib import Path
 from hdx.location.country import Country
 from pandas import read_parquet
 
+from ...config import iso3_exclude
+
+ISO3_LEN = 3
+
 column_rename = {
     "date_valid_from": "date_valid_on",
     "caveates": "caveats",
@@ -60,6 +64,8 @@ columns = [
 
 def refactor(output_file: Path) -> None:
     """Refactor file."""
+    iso3_exclude_all = [x for x in iso3_exclude if len(x) == ISO3_LEN]
+    iso3_exclude_version = [x.replace("_V", "v") for x in iso3_exclude if "_V" in x]
     df = read_parquet(output_file)
     df = df.rename(columns=column_rename)
     df["country_name"] = df["country_iso3"].apply(Country.get_country_name_from_iso3)
@@ -73,6 +79,8 @@ def refactor(output_file: Path) -> None:
     df[count_columns] = df[count_columns].astype("Int32")
     df = df[df["version"] != ""]
     df = df[df["admin_level_max"].gt(0)]
+    df = df[~df["country_iso3"].isin(iso3_exclude_all)]
+    df = df[~(df["country_iso3"] + df["version"]).isin(iso3_exclude_version)]
     df = df[columns].sort_values(by=["country_iso3", "version"])
     df.to_parquet(
         output_file.with_stem(output_file.stem + "_all"),

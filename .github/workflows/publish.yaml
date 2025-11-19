@@ -39,4 +39,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: public.ecr.aws/unocha/hdx-scraper-cod-ab:${{ steps.tag_info.outputs.IMAGE_TAG }}
+          tags: public.ecr.aws/unocha/hdx-scraper-cod-ab-country:${{ steps.tag_info.outputs.IMAGE_TAG }}

@@ -19,7 +19,7 @@ certifi==2025.11.12
     #   pyogrio
     #   pyproj
     #   requests
-cfgv==3.4.0
+cfgv==3.5.0
     # via pre-commit
 chardet==5.2.0
     # via frictionless
@@ -176,7 +176,7 @@ ply==3.11
     #   libhxl
 pockets==0.9.1
     # via sphinxcontrib-napoleon
-pre-commit==4.4.0
+pre-commit==4.5.0
 psutil==6.1.1
     # via taskipy
 pyarrow==22.0.0
@@ -251,7 +251,7 @@ ruamel-yaml==0.18.16
     # via hdx-python-utilities
 ruamel-yaml-clib==0.2.15 ; platform_python_implementation == 'CPython'
     # via ruamel-yaml
-ruff==0.14.5
+ruff==0.14.6
 scikit-learn==1.7.2
     # via quantulum3
 scipy==1.16.3

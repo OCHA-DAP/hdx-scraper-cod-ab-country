@@ -181,7 +181,7 @@ psutil==6.1.1
     # via taskipy
 pyarrow==22.0.0
     # via hdx-scraper-cod-ab-country
-pydantic==2.12.4
+pydantic==2.12.5
     # via frictionless
 pydantic-core==2.41.5
     # via pydantic
@@ -189,7 +189,7 @@ pygments==2.19.2
     # via
     #   pytest
     #   rich
-pyogrio==0.11.1
+pyogrio==0.12.0
     # via geopandas
 pyphonetics==0.5.3
     # via hdx-python-utilities

@@ -12,6 +12,10 @@ column_rename = {
     "caveates": "caveats",
 }
 
+contributor_updates = {
+    "IRQ": "OCHA Middle East and North Africa (ROMENA)",
+}
+
 name_columns = [
     "admin_1_name",
     "admin_2_name",
@@ -68,6 +72,8 @@ def refactor(output_file: Path) -> None:
     iso3_exclude_version = [x.replace("_V", "v") for x in iso3_exclude if "_V" in x]
     df = read_parquet(output_file)
     df = df.rename(columns=column_rename)
+    for key, value in contributor_updates.items():
+        df.loc[df["country_iso3"] == key, "contributor"] = value
     df["country_name"] = df["country_iso3"].apply(Country.get_country_name_from_iso3)
     df["country_iso2"] = df["country_iso3"].apply(Country.get_iso2_from_iso3)
     df[name_columns] = df[name_columns].replace("currently not known", None)

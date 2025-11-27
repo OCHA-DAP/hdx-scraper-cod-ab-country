@@ -958,7 +958,7 @@ wheels = [
 
 [[package]]
 name = "pydantic"
-version = "2.12.4"
+version = "2.12.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "annotated-types" },
@@ -966,9 +966,9 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "typing-inspection" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/96/ad/a17bc283d7d81837c061c49e3eaa27a45991759a1b7eae1031921c6bd924/pydantic-2.12.4.tar.gz", hash = "sha256:0f8cb9555000a4b5b617f66bfd2566264c4984b27589d3b845685983e8ea85ac", size = 821038, upload-time = "2025-11-05T10:50:08.59Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/69/44/36f1a6e523abc58ae5f928898e4aca2e0ea509b5aa6f6f392a5d882be928/pydantic-2.12.5.tar.gz", hash = "sha256:4d351024c75c0f085a9febbb665ce8c0c6ec5d30e903bdb6394b7ede26aebb49", size = 821591, upload-time = "2025-11-26T15:11:46.471Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/82/2f/e68750da9b04856e2a7ec56fc6f034a5a79775e9b9a81882252789873798/pydantic-2.12.4-py3-none-any.whl", hash = "sha256:92d3d202a745d46f9be6df459ac5a064fdaa3c1c4cd8adcfa332ccf3c05f871e", size = 463400, upload-time = "2025-11-05T10:50:06.732Z" },
+    { url = "https://files.pythonhosted.org/packages/5a/87/b70ad306ebb6f9b585f114d0ac2137d792b48be34d732d60e597c2f8465a/pydantic-2.12.5-py3-none-any.whl", hash = "sha256:e561593fccf61e8a20fc46dfc2dfe075b8be7d0188df33f221ad1f0139180f9d", size = 463580, upload-time = "2025-11-26T15:11:44.605Z" },
 ]
 
 [[package]]
@@ -1007,21 +1007,27 @@ wheels = [
 
 [[package]]
 name = "pyogrio"
-version = "0.11.1"
+version = "0.12.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "certifi" },
     { name = "numpy" },
     { name = "packaging" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/bf/1d/ae0340237207664e2da1b77f2cdbcb5f81fd0fc9f3200a48ca993a5e12ef/pyogrio-0.11.1.tar.gz", hash = "sha256:e1441dc9c866f10d8e6ae7ea9249a10c1f57ea921b1f19a5b0977ab91ef8082c", size = 287267, upload-time = "2025-08-02T20:19:20.167Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/99/57/5e1a5f8d83e51792b16ed1d033a1a8954222848e48d9402aaea6480f083f/pyogrio-0.12.0.tar.gz", hash = "sha256:3251716c2543dea0501346fd97c5ba4f6ba81ec235448b4712d613219bdbc846", size = 301187, upload-time = "2025-11-26T10:04:19.605Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f2/68/86328e36d010ee565ce0c65cdf9b830afcb1fb5972f537fe1cc561a49247/pyogrio-0.11.1-cp313-cp313-macosx_12_0_arm64.whl", hash = "sha256:3b368c597357ff262f3b46591ded86409462ee594ef42556708b090d121f873c", size = 19445347, upload-time = "2025-08-02T20:18:51.088Z" },
-    { url = "https://files.pythonhosted.org/packages/20/bc/34bd87641fc2ecc6d842d6d758bbaa8d58aea4d36aa6a1111cbc9d450e74/pyogrio-0.11.1-cp313-cp313-macosx_12_0_x86_64.whl", hash = "sha256:1cb82cfd3493f32396e9c3f9255e17885610f62a323870947f4e04dd59bc3595", size = 20630594, upload-time = "2025-08-02T20:18:53.176Z" },
-    { url = "https://files.pythonhosted.org/packages/68/9a/41b72ffa3e21354eb9afbbae855c86b94dbf06b22e89c16a807cc8b22bd2/pyogrio-0.11.1-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5d61aae22e67030fd354f03e21c6462537bf56160134dd8663709335a5a46b28", size = 26929440, upload-time = "2025-08-02T20:18:55.614Z" },
-    { url = "https://files.pythonhosted.org/packages/42/dd/c968c49a2e9b7c219eac0cc504241c21ef789f1f1b34d33780508cea9764/pyogrio-0.11.1-cp313-cp313-manylinux_2_28_aarch64.whl", hash = "sha256:76150a3cd787c31628191c7abc6f8c796660125852fb65ae15dd7be1e9196816", size = 26433178, upload-time = "2025-08-02T20:18:58.274Z" },
-    { url = "https://files.pythonhosted.org/packages/89/a9/79eca15094f7806a3adcf0bb976ab4346b0fb1bd87956c1933df44546c14/pyogrio-0.11.1-cp313-cp313-manylinux_2_28_x86_64.whl", hash = "sha256:e929452f6988c0365dd32ff2485d9488160a709fee28743abbbc18d663169ed0", size = 27616835, upload-time = "2025-08-02T20:19:01.112Z" },
-    { url = "https://files.pythonhosted.org/packages/2b/f3/7722bc81e9eee39b528c1cbc6289a26d2d3b1b187491ed8493457d6a3a0e/pyogrio-0.11.1-cp313-cp313-win_amd64.whl", hash = "sha256:d6d56862b89a05fccd7211171c88806b6ec9b5effb79bf807cce0a57c1f2a606", size = 19219088, upload-time = "2025-08-02T20:19:03.732Z" },
+    { url = "https://files.pythonhosted.org/packages/db/ee/0bed5c468a9c21748d67446b1474b9bc3d617ba13bbca39ccf93042992ef/pyogrio-0.12.0-cp313-cp313-macosx_12_0_arm64.whl", hash = "sha256:d46c7f5e1d915d0628a57387f09763d02361735c6fac787918bf1fa70bbca4f5", size = 23655289, upload-time = "2025-11-26T10:03:11.88Z" },
+    { url = "https://files.pythonhosted.org/packages/9c/29/59635f1c6f7a0d77a8f9985ae52cfd6817b66b362ebffc859bbc2238e02b/pyogrio-0.12.0-cp313-cp313-macosx_12_0_x86_64.whl", hash = "sha256:9518dacea1ef56fe5b41fc049a42eb55654efd7631c61db9ebbdaba6c83cf822", size = 25230148, upload-time = "2025-11-26T10:03:14.596Z" },
+    { url = "https://files.pythonhosted.org/packages/d4/e2/85fbd9b7bd81453ad3ec4cf8e01006eb5f8e48f6ef2108f4fd3b5b94491d/pyogrio-0.12.0-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:e6b9d0922e5e7be44f7428b487ff3f2402c7315f4d5c777a8ea219c18147fefa", size = 31365267, upload-time = "2025-11-26T10:03:17.201Z" },
+    { url = "https://files.pythonhosted.org/packages/7b/59/8aec485478cabeee50ae60b0d25a528735051db4bb1c43a05ea8ec6cafbe/pyogrio-0.12.0-cp313-cp313-manylinux_2_28_aarch64.whl", hash = "sha256:235424970584f03c45ea9f09e1f553deb6d68bdf44d84a53461b31d1f9bb85e0", size = 30902147, upload-time = "2025-11-26T10:03:19.796Z" },
+    { url = "https://files.pythonhosted.org/packages/46/8c/d798ffb4d5b967f4a09b79e89d59769c68ae0ad6f9e39201a580e0dcd521/pyogrio-0.12.0-cp313-cp313-manylinux_2_28_x86_64.whl", hash = "sha256:3af8b5dbb81b27350e7ad8c08eb4d3245df604222c5bf9b93a418bddd7e23377", size = 32487964, upload-time = "2025-11-26T10:03:22.58Z" },
+    { url = "https://files.pythonhosted.org/packages/61/1c/59943dd6334efe7994363b77e8ef4a68624a45b79b72f0f7ecb5752cf00c/pyogrio-0.12.0-cp313-cp313-win_amd64.whl", hash = "sha256:e4ac34a8efa2de93063032b705e6a8e75a4709276c178505bf5a0f8d1db4a85f", size = 22930243, upload-time = "2025-11-26T10:03:25.092Z" },
+    { url = "https://files.pythonhosted.org/packages/10/69/b768ca3f165a3926110c5e5d79b6933e60d9ca6e85545fd8922edb1d060c/pyogrio-0.12.0-cp313-cp313t-macosx_12_0_arm64.whl", hash = "sha256:19aa695ee23450575320590f8a7eb100b71c33137de5148e053eb107dd84af7f", size = 23689585, upload-time = "2025-11-26T10:03:27.665Z" },
+    { url = "https://files.pythonhosted.org/packages/d2/15/fc7f6537379beab01041fbd31cfa1ae4b9fd24cec145b559340db0d70919/pyogrio-0.12.0-cp313-cp313t-macosx_12_0_x86_64.whl", hash = "sha256:69edb22f72aa8c689ced7d1291c26babb2a1c9ae584ea2b87085b1d44bb63d03", size = 25254520, upload-time = "2025-11-26T10:03:30.188Z" },
+    { url = "https://files.pythonhosted.org/packages/b2/67/c99b72e2058b204c18e8112dbbde75370a1404b681545b9486738f16f812/pyogrio-0.12.0-cp313-cp313t-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:315b66df36748df64a7dea9032d7209043d2376f89769e816fff21ebabb04b9d", size = 31360119, upload-time = "2025-11-26T10:03:33.219Z" },
+    { url = "https://files.pythonhosted.org/packages/87/f1/67b590aaff94456afb28cff2a08736024f884e06d37b9034d30115368774/pyogrio-0.12.0-cp313-cp313t-manylinux_2_28_aarch64.whl", hash = "sha256:9e7a606a61fc2d56453e0c5ef29c1262cfbcd723be5a0c306521da92681f5c36", size = 31022499, upload-time = "2025-11-26T10:03:36.464Z" },
+    { url = "https://files.pythonhosted.org/packages/08/e4/82d66c2a6bf396dbf602f444e0d5d766844c7fa11f34024c66a912c61b84/pyogrio-0.12.0-cp313-cp313t-manylinux_2_28_x86_64.whl", hash = "sha256:06b287d732e79426b563d4c83495d34035acdb027997e6552267e8409d957996", size = 32474247, upload-time = "2025-11-26T10:03:39.372Z" },
+    { url = "https://files.pythonhosted.org/packages/1b/97/d379df71d9ac308fa19d44e303110664a30a00d43f22aa3f74d209a4e257/pyogrio-0.12.0-cp313-cp313t-win_amd64.whl", hash = "sha256:bc5b586363161462ade5d35b029e2c54406652b5d56c21d6e09f221c41d918a2", size = 22983510, upload-time = "2025-11-26T10:03:42.172Z" },
 ]
 
 [[package]]

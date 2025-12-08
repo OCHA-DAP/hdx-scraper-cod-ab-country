@@ -47,6 +47,6 @@ def download_feature(
             "--lco=COMPRESSION_LEVEL=15",
             "--lco=COMPRESSION=ZSTD",
         ],
-        check=False,
+        check=True,
     )
     refactor(output_file)

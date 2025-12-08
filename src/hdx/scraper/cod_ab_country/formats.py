@@ -39,7 +39,7 @@ def to_multilayer(src_dataset: Path, dst_dataset: Path, *, multi: bool) -> None:
             *lco,
             *output_options,
         ],
-        check=False,
+        check=True,
     )
 
 

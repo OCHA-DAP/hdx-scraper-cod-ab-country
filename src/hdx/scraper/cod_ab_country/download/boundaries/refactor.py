@@ -53,6 +53,6 @@ def refactor(output_tmp: Path) -> None:
             "--lco=COMPRESSION_LEVEL=15",
             "--lco=COMPRESSION=ZSTD",
         ],
-        check=False,
+        check=True,
     )
     output_tmp.unlink()

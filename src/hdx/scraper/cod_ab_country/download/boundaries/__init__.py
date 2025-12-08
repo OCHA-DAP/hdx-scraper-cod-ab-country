@@ -27,7 +27,7 @@ def download_feature(data_dir: Path, url: str, params: dict, response: dict) -> 
             *["-mapFieldType", "DateTime=Date"],
             *[output_file, "ESRIJSON:" + query_url],
         ],
-        check=False,
+        check=True,
     )
 
 

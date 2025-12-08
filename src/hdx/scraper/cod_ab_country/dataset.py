@@ -74,8 +74,8 @@ def get_notes(iso3: str, metadata: dict) -> str:
         f"This dataset is structured into {admin_levels} level{levels_plural}:",
     ]
     for level in range(1, admin_levels + 1):
-        admin_units = metadata[f"admin_{level}_count"]
-        admin_type = metadata[f"admin_{level}_name"]
+        admin_units = metadata[f"admin_{level}_count"] or ""
+        admin_type = metadata[f"admin_{level}_name"] or ""
         admin_partial = (
             level > metadata["admin_level_full"]
             if metadata["admin_level_full"] != "Unknown"

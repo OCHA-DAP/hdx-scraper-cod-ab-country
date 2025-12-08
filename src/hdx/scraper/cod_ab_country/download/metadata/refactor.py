@@ -16,6 +16,10 @@ contributor_updates = {
     "IRQ": "OCHA Middle East and North Africa (ROMENA)",
 }
 
+admin_level_full_updates = [
+    ("PHL", "v03", 3),
+]
+
 name_columns = [
     "admin_1_name",
     "admin_2_name",
@@ -82,6 +86,11 @@ def refactor(output_file: Path) -> None:
         df["admin_level_max"].astype("string"),
     )
     df["admin_level_full"] = df["admin_level_full"].astype("Int32")
+    for iso3, version, level in admin_level_full_updates:
+        df.loc[
+            (df["country_iso3"] == iso3) & (df["version"] == version),
+            "admin_level_full",
+        ] = level
     df[count_columns] = df[count_columns].astype("Int32")
     df = df[df["version"] != ""]
     df = df[df["admin_level_max"].gt(0)]

@@ -2,11 +2,14 @@ from pathlib import Path
 from subprocess import run
 from urllib.parse import urlencode
 
-from ...config import ARCGIS_SERVICE_URL
+from tenacity import retry, stop_after_attempt, wait_fixed
+
+from ...config import ARCGIS_SERVICE_URL, ATTEMPT, WAIT
 from ...utils import client_get
 from ..utils import parse_fields
 
 
+@retry(stop=stop_after_attempt(ATTEMPT), wait=wait_fixed(WAIT))
 def download_feature(data_dir: Path, url: str, params: dict, response: dict) -> None:
     """Download a ESRIJSON from a Feature Layer."""
     layer_name = response["name"]
@@ -31,6 +34,7 @@ def download_feature(data_dir: Path, url: str, params: dict, response: dict) -> 
     )
 
 
+@retry(stop=stop_after_attempt(ATTEMPT), wait=wait_fixed(WAIT))
 def download_boundaries(data_dir: Path, token: str, iso3: str, version: str) -> None:
     """Download all ESRIJSON from the URL provided."""
     params = {"f": "json", "token": token}

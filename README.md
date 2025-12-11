@@ -4,7 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/OCHA-DAP/hdx-scraper-cod-ab/badge.svg?branch=main&ts=1)](https://coveralls.io/github/OCHA-DAP/hdx-scraper-cod-ab?branch=main)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
-This script downloads the latest Common Operational Datasets - Administrative Boundaries (COD-AB) from [gis.unocha.org](https://gis.unocha.org/server/rest/services/Hosted).
+This script downloads the latest Common Operational Datasets - Administrative Boundaries (COD-AB) from [gis.unocha.org](https://gis.unocha.org/server/rest/services/Hosted) and generates country datasets.
 
 ## Development
 

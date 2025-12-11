@@ -91,20 +91,17 @@ def get_notes(iso3: str, metadata: dict) -> str:
     lines.extend(["", "", "Dates associated with this dataset:"])
     date_format = "%d %B %Y"
     dates = [
-        f"- {metadata['date_source'].strftime(date_format)}: boundaries created by the source"
-        if metadata["date_source"]
-        else None,
-        f"- {metadata['date_updated'].strftime(date_format)}: last edit to the dataset before publishing"
-        if metadata["date_updated"]
+        f"- {metadata['date_reviewed'].strftime(date_format)}: dataset reviewed for accuracy and completeness"
+        if metadata["date_reviewed"]
         else None,
         f"- {metadata['date_valid_on'].strftime(date_format)}: valid for use by the humanitarian community"
         if metadata["date_valid_on"]
         else None,
-        f"- {metadata['date_reviewed'].strftime(date_format)}: dataset reviewed for accuracy and completeness"
-        if metadata["date_reviewed"]
+        f"- {metadata['date_updated'].strftime(date_format)}: last edit to the dataset before publishing"
+        if metadata["date_updated"]
         else None,
-        f"- {metadata['date_metadata'].strftime(date_format)}: this metadata updated"
-        if metadata["date_metadata"]
+        f"- {metadata['date_source'].strftime(date_format)}: boundaries created by the source"
+        if metadata["date_source"]
         else None,
     ]
     dates = [x for x in dates if x]

@@ -1,5 +1,4 @@
 # flake8: noqa: E501
-
 import logging
 from pathlib import Path
 
@@ -58,7 +57,7 @@ def add_metadata(iso3: str, metadata: dict, dataset: Dataset) -> Dataset | None:
     methodology = [x for x in methodology if x]
     dataset["methodology_other"] = "  \n  \n".join(methodology)
     dataset["caveats"] = metadata["caveats"] or None
-    dataset.add_tags(["administrative boundaries-divisions", "gazetteer"])
+    dataset.add_tags(["administrative boundaries-divisions", "gazetteer", "geodata"])
     return dataset
 
 
@@ -109,6 +108,8 @@ def get_notes(iso3: str, metadata: dict) -> str:
     vetting = [
         "",
         "Quality assured, configured, and published by HDX and OCHA Field Information Services (FIS).",
+        "",
+        "Part of the dataset: [Global Subnational Administrative Boundaries](https://data.humdata.org/dataset/cod-ab-global)",
     ]
     lines.extend(vetting)
     return "  \n".join(lines)

@@ -56,6 +56,8 @@ def get_layer_list(data_dir: Path) -> list[tuple[str, str]]:
                 layer_list.append((iso3, version_include))
             elif iso3 in iso3_include:
                 layer_list.append((iso3, version))
+        else:
+            layer_list.append((iso3, version))
     return layer_list
 
 

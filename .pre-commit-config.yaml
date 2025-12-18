@@ -2,7 +2,7 @@ default_language_version:
   python: python3.14
 repos:
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.9.17
+    rev: 0.9.18
     hooks:
       - id: uv-sync
       - id: uv-export

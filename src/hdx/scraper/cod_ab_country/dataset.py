@@ -7,6 +7,8 @@ from hdx.data.organization import Organization
 from hdx.data.resource import Resource
 from hdx.location.country import Country
 
+from .config import OCHA_ISS_ORG_NAME
+
 logger = logging.getLogger(__name__)
 
 format_types = [
@@ -42,11 +44,7 @@ def add_metadata(iso3: str, metadata: dict, dataset: Dataset) -> Dataset | None:
     dataset["data_update_frequency"] = metadata["update_frequency"] * 365
     dataset.add_country_location(iso3)
     dataset["dataset_source"] = metadata["source"]
-    org_name = metadata["contributor"]
-    org = Organization.autocomplete(org_name)
-    if len(org) not in (1, 2):
-        logger.error("Matching organization not found for '%s'", org_name)
-        return None
+    org = Organization.autocomplete(OCHA_ISS_ORG_NAME)
     dataset.set_organization(org[0])
     methodology_dataset = metadata["methodology_dataset"]
     methodology_pcodes = metadata["methodology_pcodes"]
@@ -67,11 +65,20 @@ def get_notes(iso3: str, metadata: dict) -> str:
     admin_levels = metadata["admin_level_max"]
     admin_level_range = "0" if admin_levels == 0 else f"0-{admin_levels}"
     levels_plural = "s" if admin_levels != 1 else ""
+    org_name_raw = metadata["contributor"]
+    org = Organization.autocomplete(org_name_raw)
+    org_cfg = None
+    if len(org) in (1, 2):
+        org_cfg = org[0]
     lines = [
         f"{country_name} administrative level {admin_level_range} boundaries (COD-AB) dataset version {metadata['version'][1:]}.",
-        "",
-        f"This dataset is structured into {admin_levels} level{levels_plural}:",
     ]
+    lines.extend(
+        [
+            "",
+            f"This dataset is structured into {admin_levels} level{levels_plural}:",
+        ],
+    )
     for level in range(1, admin_levels + 1):
         admin_units = metadata[f"admin_{level}_count"] or ""
         admin_type = metadata[f"admin_{level}_name"] or ""
@@ -105,9 +112,15 @@ def get_notes(iso3: str, metadata: dict) -> str:
     ]
     dates = [x for x in dates if x]
     lines.extend(dates)
+    lines.append("")
+    if org_cfg:
+        lines.extend(
+            [
+                f"Contributed by [{org_cfg['title']}](https://data.humdata.org/organization/{org_cfg['name']}).",
+            ],
+        )
     vetting = [
-        "",
-        "Quality assured, configured, and published by HDX and OCHA Field Information Services (FIS).",
+        "Quality assured, configured, and published by [OCHA Information Systems Section (ISS)](https://data.humdata.org/organization/ocha-fiss) and [HDX](https://data.humdata.org/organization/hdx).",
         "",
         "Part of the dataset: [Global Subnational Administrative Boundaries](https://data.humdata.org/dataset/cod-ab-global)",
     ]

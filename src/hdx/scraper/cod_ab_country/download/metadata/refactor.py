@@ -34,6 +34,7 @@ source_updates = {
 }
 
 contributor_updates = {
+    "BFA": "OCHA Burkina Faso",
     "GEO": "OCHA Middle East and North Africa (ROMENA)",
     "GTM": "OCHA Field Information Services Section (FISS)",
     "HND": "OCHA Latin America and the Caribbean (ROLAC)",

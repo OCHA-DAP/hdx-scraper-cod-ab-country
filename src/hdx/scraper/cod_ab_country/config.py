@@ -16,6 +16,8 @@ environ["OGR_GEOJSON_MAX_OBJ_SIZE"] = "0"
 environ["OGR_ORGANIZE_POLYGONS"] = "ONLY_CCW"
 environ["PYOGRIO_USE_ARROW"] = "1"
 
+OCHA_ISS_ORG_NAME = "OCHA Field Information Services Section (FISS)"
+
 OBJECTID = "esriFieldTypeOID"
 
 ARCGIS_SERVER = getenv("ARCGIS_SERVER", "https://gis.unocha.org")

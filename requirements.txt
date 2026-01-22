@@ -282,13 +282,13 @@ unidecode==1.4.0
     # via
     #   libhxl
     #   pyphonetics
-urllib3==2.6.2
+urllib3==2.6.3
     # via
     #   libhxl
     #   requests
 validators==0.35.0
     # via frictionless
-wheel==0.45.1
+wheel==0.46.2
     # via libhxl
 wikipedia==1.4.0
     # via quantulum3

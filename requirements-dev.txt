@@ -55,7 +55,7 @@ email-validator==2.3.0
     # via hdx-python-api
 et-xmlfile==2.0.0
     # via openpyxl
-filelock==3.20.1
+filelock==3.20.3
     # via virtualenv
 frictionless==5.18.1
     # via hdx-python-utilities
@@ -320,15 +320,15 @@ unidecode==1.4.0
     # via
     #   libhxl
     #   pyphonetics
-urllib3==2.6.2
+urllib3==2.6.3
     # via
     #   libhxl
     #   requests
 validators==0.35.0
     # via frictionless
-virtualenv==20.35.4
+virtualenv==20.36.1
     # via pre-commit
-wheel==0.45.1
+wheel==0.46.2
     # via libhxl
 wikipedia==1.4.0
     # via quantulum3

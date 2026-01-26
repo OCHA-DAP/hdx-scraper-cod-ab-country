@@ -176,8 +176,10 @@ saved_data/
 # Mac files
 .DS_Store
 
-# Ruff cache
+# Caches
 .ruff_cache
+.claude
+plans/
 
 # test results
 test-results.xml

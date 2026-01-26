@@ -7,7 +7,8 @@ from hdx.data.organization import Organization
 from hdx.data.resource import Resource
 from hdx.location.country import Country
 
-from .config import OCHA_ISS_ORG_NAME
+from .config import OCHA_ORG_NAME
+from .dataset_utils import compare_gdb
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +45,7 @@ def add_metadata(iso3: str, metadata: dict, dataset: Dataset) -> Dataset | None:
     dataset["data_update_frequency"] = metadata["update_frequency"] * 365
     dataset.add_country_location(iso3)
     dataset["dataset_source"] = metadata["source"]
-    org = Organization.autocomplete(OCHA_ISS_ORG_NAME)
+    org = Organization.autocomplete(OCHA_ORG_NAME)
     dataset.set_organization(org[0])
     methodology_dataset = metadata["methodology_dataset"]
     methodology_pcodes = metadata["methodology_pcodes"]
@@ -113,14 +114,14 @@ def get_notes(iso3: str, metadata: dict) -> str:
     dates = [x for x in dates if x]
     lines.extend(dates)
     lines.append("")
-    if org_cfg:
+    if org_cfg and org_cfg["title"] != OCHA_ORG_NAME:
         lines.extend(
             [
                 f"Contributed by [{org_cfg['title']}](https://data.humdata.org/organization/{org_cfg['name']}).",
             ],
         )
     vetting = [
-        "Quality assured, configured, and published by [OCHA Information Systems Section (ISS)](https://data.humdata.org/organization/ocha-fiss) and [HDX](https://data.humdata.org/organization/hdx).",
+        "Quality assured, configured, and published by [OCHA Field Information Services (FIS)](https://data.humdata.org/organization/ocha-fiss) and [HDX](https://data.humdata.org/organization/hdx).",
         "",
         "Part of the dataset: [Global Subnational Administrative Boundaries](https://data.humdata.org/dataset/cod-ab-global)",
     ]
@@ -145,7 +146,13 @@ def add_resources(
         if admin_level > 0:
             resource_data["p_coded"] = "True"
         resource = Resource(resource_data)
-        resource.set_file_to_upload(str(iso3_dir / resource_name))
+        file_to_upload = iso3_dir / resource_name
+        if ext == "gdb.zip":
+            file_to_upload = compare_gdb(
+                iso3_dir / resource_name,
+                dataset.get_name_or_id(),
+            )
+        resource.set_file_to_upload(file_to_upload)
         resource.set_format(format_type)
         dataset.add_update_resource(resource)
     dataset.preview_resource()

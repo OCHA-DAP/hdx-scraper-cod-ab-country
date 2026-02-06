@@ -1,6 +1,6 @@
 FROM ghcr.io/osgeo/gdal:alpine-normal-3.12.1
 
-WORKDIR /srv
+WORKDIR /usr/src/app
 
 ENV PATH="/opt/venv/bin:$PATH"
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -20,6 +20,7 @@ RUN --mount=type=bind,source=requirements.txt,target=requirements.txt \
     apk del .build-deps && \
     rm -rf /root/.cache
 
-COPY src ./src
+COPY run.py ./run.py
+COPY src ./
 
-CMD ["python", "-m", "src.hdx.scraper.cod_ab_country"]
+CMD ["python", "run.py"]

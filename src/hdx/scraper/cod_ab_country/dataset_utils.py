@@ -1,8 +1,8 @@
 from filecmp import cmpfiles, dircmp
+from json import loads
 from pathlib import Path
-from subprocess import run
+from subprocess import PIPE, run
 
-from geopandas import list_layers
 from hdx.data.dataset import Dataset
 from tenacity import retry, stop_after_attempt, wait_fixed
 
@@ -26,9 +26,19 @@ def _download_geodata_from_hdx(
     return None
 
 
+def _list_layers(input_path: Path) -> list[str]:
+    """List layers in a GeoPackage."""
+    result = run(
+        ["gdal", "vector", "info", "--summary", "--format=json", input_path],
+        check=False,
+        stdout=PIPE,
+    )
+    return [x["name"] for x in loads(result.stdout)["layers"]]
+
+
 def _convert_geodata(input_path: Path, output_dir: Path, var: str) -> Path:
     """Convert Geodata to GeoPackage using GDAL."""
-    layers = list_layers(input_path)["name"]
+    layers = _list_layers(input_path)
     var_path = output_dir / f"{input_path.stem}_{var}"
     var_path.mkdir(exist_ok=True, parents=True)
     for layer in layers:

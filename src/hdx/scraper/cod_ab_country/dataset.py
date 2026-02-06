@@ -8,7 +8,7 @@ from hdx.data.resource import Resource
 from hdx.location.country import Country
 
 from .config import OCHA_ORG_NAME
-from .dataset_utils import compare_gdb
+from .dataset_utils import compare_geodata
 
 logger = logging.getLogger(__name__)
 
@@ -147,8 +147,8 @@ def add_resources(
             resource_data["p_coded"] = "True"
         resource = Resource(resource_data)
         file_to_upload = iso3_dir / resource_name
-        if ext == "gdb.zip":
-            file_to_upload = compare_gdb(
+        if ext in ("gdb.zip", "shp.zip"):
+            file_to_upload = compare_geodata(
                 iso3_dir / resource_name,
                 dataset.get_name_or_id(),
             )

@@ -2,7 +2,7 @@ default_language_version:
   python: python3.14
 repos:
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.9.26
+    rev: 0.10.0
     hooks:
       - id: uv-sync
       - id: uv-export
@@ -25,7 +25,7 @@ repos:
             "--no-hashes",
           ]
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.14
+    rev: v0.15.0
     hooks:
       - id: ruff-format
       - id: ruff-check

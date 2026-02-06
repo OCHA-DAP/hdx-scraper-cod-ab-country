@@ -6,10 +6,10 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from hdx.scraper.cod_ab_country.dataset_utils import (
-    _convert_gdb_to_gpkg,
-    _download_gdb_from_hdx,
+    _convert_geodata_to_gpkg,
+    _download_geodata_from_hdx,
     _is_file_same,
-    compare_gdb,
+    compare_geodata,
 )
 
 
@@ -21,7 +21,7 @@ class TestDownloadGdbFromHdx:
             "hdx.scraper.cod_ab_country.dataset_utils.Dataset.read_from_hdx",
             return_value=None,
         ):
-            result = _download_gdb_from_hdx("test.gdb.zip", "cod-ab-test", tmp_path)
+            result = _download_geodata_from_hdx("test.gdb.zip", "cod-ab-test", tmp_path)
             assert result is None
 
     def test_returns_none_when_resource_not_found(self, tmp_path: Path) -> None:
@@ -34,7 +34,7 @@ class TestDownloadGdbFromHdx:
             "hdx.scraper.cod_ab_country.dataset_utils.Dataset.read_from_hdx",
             return_value=mock_dataset,
         ):
-            result = _download_gdb_from_hdx("test.gdb.zip", "cod-ab-test", tmp_path)
+            result = _download_geodata_from_hdx("test.gdb.zip", "cod-ab-test", tmp_path)
             assert result is None
 
     def test_downloads_and_renames_resource(self, tmp_path: Path) -> None:
@@ -52,7 +52,7 @@ class TestDownloadGdbFromHdx:
             "hdx.scraper.cod_ab_country.dataset_utils.Dataset.read_from_hdx",
             return_value=mock_dataset,
         ):
-            result = _download_gdb_from_hdx("test.gdb.zip", "cod-ab-test", tmp_path)
+            result = _download_geodata_from_hdx("test.gdb.zip", "cod-ab-test", tmp_path)
             assert result == tmp_path / "test.gdb.zip"
             assert result.exists()
 
@@ -67,7 +67,7 @@ class TestConvertGdbToGpkg:
         with patch(
             "hdx.scraper.cod_ab_country.dataset_utils.run",
         ) as mock_run:
-            result = _convert_gdb_to_gpkg(gdb_path, gpkg_path)
+            result = _convert_geodata_to_gpkg(gdb_path, gpkg_path)
 
             mock_run.assert_called_once()
             call_args = mock_run.call_args[0][0]
@@ -128,7 +128,7 @@ class TestCompareGdb:
             "hdx.scraper.cod_ab_country.dataset_utils._download_gdb_from_hdx",
             return_value=None,
         ):
-            result = compare_gdb(local_path, "cod-ab-test")
+            result = compare_geodata(local_path, "cod-ab-test")
             assert result == local_path
 
     def test_returns_remote_path_when_files_identical(self, tmp_path: Path) -> None:
@@ -146,7 +146,7 @@ class TestCompareGdb:
                 return_value=True,
             ),
         ):
-            result = compare_gdb(local_path, "cod-ab-test")
+            result = compare_geodata(local_path, "cod-ab-test")
             assert result == remote_path
 
     def test_returns_local_path_when_files_different(self, tmp_path: Path) -> None:
@@ -164,7 +164,7 @@ class TestCompareGdb:
                 return_value=False,
             ),
         ):
-            result = compare_gdb(local_path, "cod-ab-test")
+            result = compare_geodata(local_path, "cod-ab-test")
             assert result == local_path
 
     def test_creates_tmp_directory(self, tmp_path: Path) -> None:
@@ -175,5 +175,5 @@ class TestCompareGdb:
             "hdx.scraper.cod_ab_country.dataset_utils._download_gdb_from_hdx",
             return_value=None,
         ):
-            compare_gdb(local_path, "cod-ab-test")
+            compare_geodata(local_path, "cod-ab-test")
             assert (tmp_path / "tmp").exists()

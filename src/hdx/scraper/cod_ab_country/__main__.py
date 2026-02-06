@@ -8,6 +8,7 @@ from hdx.utilities.path import wheretostart_tempdir_batch
 from tqdm import tqdm
 
 from . import formats
+from .config import iso3_exclude_cfg, iso3_include_cfg
 from .dataset import generate_dataset
 from .download.boundaries import download_boundaries
 from .download.metadata import download_metadata
@@ -48,9 +49,24 @@ def create_country_dataset(
     rmtree(iso3_dir)
 
 
-def main(save: bool = True, use_saved: bool = False) -> None:  # noqa: FBT001, FBT002
+def main(
+    iso3_include: str = "",
+    iso3_exclude: str = "",
+    save: bool = True,  # noqa: FBT001, FBT002
+    use_saved: bool = False,  # noqa: FBT001, FBT002
+) -> None:
     """Generate datasets and create them in HDX."""
     Configuration.read()
+    if iso3_include:
+        iso3_include_cfg.clear()
+        iso3_include_cfg.extend(
+            [x.strip() for x in iso3_include.upper().split(",") if x.strip()],
+        )
+    if iso3_exclude:
+        iso3_exclude_cfg.clear()
+        iso3_exclude_cfg.extend(
+            [x.strip() for x in iso3_exclude.upper().split(",") if x.strip()],
+        )
     with wheretostart_tempdir_batch(folder=_USER_AGENT_LOOKUP) as info:
         temp_dir = info["folder"]
         data_dir = Path(_SAVED_DATA_DIR if save or use_saved else temp_dir)

@@ -4,7 +4,7 @@ from urllib.parse import urlencode
 
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from ...config import ARCGIS_SERVICE_URL, ATTEMPT, WAIT
+from ...config import ARCGIS_SERVICE_URL, ATTEMPT, WAIT, gdal_parquet_options
 from ...utils import client_get
 from ..utils import parse_fields
 
@@ -25,10 +25,10 @@ def download_feature(data_dir: Path, url: str, params: dict, response: dict) -> 
     output_file = data_dir / f"{layer_name}.parquet"
     run(
         [
-            "ogr2ogr",
-            *["-lco", "COMPRESSION=ZSTD"],
-            *["-mapFieldType", "DateTime=Date"],
-            *[output_file, "ESRIJSON:" + query_url],
+            *["gdal", "vector", "set-field-type"],
+            *["ESRIJSON:" + query_url, output_file],
+            *["--src-field-type=DateTime", "--dst-field-type=Date"],
+            *gdal_parquet_options,
         ],
         check=True,
     )

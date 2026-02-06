@@ -5,7 +5,7 @@ from pathlib import Path
 from hdx.location.country import Country
 from pandas import DataFrame, concat, read_parquet
 
-from ...config import iso3_exclude
+from ...config import iso3_exclude_cfg
 
 ISO3_LEN = 3
 
@@ -139,8 +139,8 @@ def merge_unique(df1: DataFrame, df2: DataFrame, columns: list[str]) -> DataFram
 
 def refactor(output_file: Path) -> None:
     """Refactor file."""
-    iso3_exclude_all = [x for x in iso3_exclude if len(x) == ISO3_LEN]
-    iso3_exclude_version = [x.replace("_V", "v") for x in iso3_exclude if "_V" in x]
+    iso3_exclude_all = [x for x in iso3_exclude_cfg if len(x) == ISO3_LEN]
+    iso3_exclude_version = [x.replace("_V", "v") for x in iso3_exclude_cfg if "_V" in x]
     df = read_parquet(output_file)
     df = df.rename(columns=column_rename)
     df_extra = merge_unique(DataFrame(extra_rows), df, ["country_iso3", "version"])

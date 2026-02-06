@@ -13,7 +13,7 @@ from .config import (
     EXPIRATION,
     TIMEOUT,
     WAIT,
-    iso3_include,
+    iso3_include_cfg,
 )
 
 logger = logging.getLogger(__name__)
@@ -49,12 +49,14 @@ def get_layer_list(data_dir: Path) -> list[tuple[str, str]]:
     ).itertuples(index=False, name=None)
     layer_list = []
     for iso3, version in layers:
-        if iso3_include:
-            if any(x.startswith(iso3) and x != iso3 for x in iso3_include):
-                version_include = next(x for x in iso3_include if x.startswith(iso3))
+        if iso3_include_cfg:
+            if any(x.startswith(iso3) and x != iso3 for x in iso3_include_cfg):
+                version_include = next(
+                    x for x in iso3_include_cfg if x.startswith(iso3)
+                )
                 version_include = version_include.split("_")[1].lower()
                 layer_list.append((iso3, version_include))
-            elif iso3 in iso3_include:
+            elif iso3 in iso3_include_cfg:
                 layer_list.append((iso3, version))
         else:
             layer_list.append((iso3, version))

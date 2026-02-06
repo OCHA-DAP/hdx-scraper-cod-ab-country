@@ -16,7 +16,7 @@ environ["OGR_GEOJSON_MAX_OBJ_SIZE"] = "0"
 environ["OGR_ORGANIZE_POLYGONS"] = "ONLY_CCW"
 environ["PYOGRIO_USE_ARROW"] = "1"
 
-OCHA_ISS_ORG_NAME = "OCHA Field Information Services Section (FISS)"
+OCHA_ORG_NAME = "OCHA Field Information Services Section (FISS)"
 
 OBJECTID = "esriFieldTypeOID"
 
@@ -35,9 +35,21 @@ TIMEOUT = int(getenv("TIMEOUT", "60"))
 TIMEOUT_DOWNLOAD = int(getenv("TIMEOUT_DOWNLOAD", "600"))
 EXPIRATION = int(getenv("EXPIRATION", "1440"))  # minutes (1 day)
 
-iso3_include = [
+ISO3_EXCLUDE_DEFAULTS = "COL,ECU,IDN,MAF,PHL,QAT,SSD"
+
+iso3_include_cfg = [
     x.strip() for x in getenv("ISO3_INCLUDE", "").upper().split(",") if x.strip()
 ]
-iso3_exclude = [
-    x.strip() for x in getenv("ISO3_EXCLUDE", "").upper().split(",") if x.strip()
+iso3_exclude_cfg = [
+    x.strip()
+    for x in getenv("ISO3_EXCLUDE", ISO3_EXCLUDE_DEFAULTS).upper().split(",")
+    if x.strip()
+]
+
+gdal_parquet_options = [
+    "--overwrite",
+    "--quiet",
+    "--lco=USE_PARQUET_GEO_TYPES=YES",
+    "--lco=COMPRESSION_LEVEL=15",
+    "--lco=COMPRESSION=ZSTD",
 ]

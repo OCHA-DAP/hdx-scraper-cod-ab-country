@@ -27,9 +27,6 @@ pytest tests/test_cod_ab.py::TestCODAB::test_cod_ab -v
 # Linting and formatting
 uv run task ruff
 # Pre-commit will also run ruff on commit
-
-# Export requirements files
-uv run task export
 ```
 
 ## Architecture

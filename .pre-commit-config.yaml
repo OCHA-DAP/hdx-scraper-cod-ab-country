@@ -1,29 +1,8 @@
-default_language_version:
-  python: python3.14
 repos:
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.10.0
+    rev: 0.10.2
     hooks:
       - id: uv-sync
-      - id: uv-export
-        args:
-          [
-            "-o",
-            "requirements.txt",
-            "-q",
-            "--no-dev",
-            "--no-emit-project",
-            "--no-hashes",
-          ]
-      - id: uv-export
-        args:
-          [
-            "-o",
-            "requirements-dev.txt",
-            "-q",
-            "--no-emit-project",
-            "--no-hashes",
-          ]
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.0
     hooks:

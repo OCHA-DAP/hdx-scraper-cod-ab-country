@@ -1,11 +1,11 @@
 [build-system]
-build-backend = "hatchling.build"
 requires = ["hatchling", "uv-dynamic-versioning"]
+build-backend = "hatchling.build"
 
 [project]
 name = "hdx-scraper-cod-ab-country"
-requires-python = ">=3.12"
 dynamic = ["version"]
+requires-python = ">=3.12"
 dependencies = [
     "geopandas",
     "hdx-python-api",
@@ -24,11 +24,32 @@ dependencies = [
 dev = ["pre-commit", "pytest", "pytest-cov", "ruff", "taskipy"]
 
 [tool.hatch]
-build.targets.wheel.packages = ["src/hdx"]
 version.source = "uv-dynamic-versioning"
+build.hooks.version.path = "src/hdx/scraper/cod_ab_country/_version.py"
+build.targets.wheel.packages = ["src/hdx"]
+
+[tool.pytest.ini_options]
+addopts = "--color=yes"
+log_cli = true
+pythonpath = "src"
+
+[tool.ruff]
+exclude = ["_version.py"]
+fix = true
+lint.select = ["ALL"]
+lint.ignore = [
+    "D100",
+    "D104",
+    "INP001",
+    "PD010",
+    "S603",
+    "S607",
+    "S608",
+    "TID252",
+]
 
 [tool.taskipy]
 # uv run task app
 tasks.app = "python run.py"
-tasks.test = "pytest --rootdir=. --junitxml=test-results.xml --cov --no-cov-on-fail --cov-report=lcov --cov-report=term-missing"
 tasks.ruff = "ruff format && ruff check && ruff format"
+tasks.test = "pytest --rootdir=. --junitxml=test-results.xml --cov --no-cov-on-fail --cov-report=lcov --cov-report=term-missing"

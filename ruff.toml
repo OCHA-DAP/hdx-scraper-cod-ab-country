@@ -1,6 +1,0 @@
-fix = true
-exclude = ["_version.py"]
-
-[lint]
-select = ["ALL"]
-ignore = ["D100", "D104", "INP001", "PD010", "S603", "S607", "S608", "TID252"]

@@ -3,7 +3,7 @@ from shutil import make_archive, rmtree
 from subprocess import run
 
 
-def get_layer_create_options(suffix: str) -> list[str]:
+def _get_layer_create_options(suffix: str) -> list[str]:
     """Get layer creation options based on the file suffix."""
     match suffix:
         case ".gdb":
@@ -14,7 +14,7 @@ def get_layer_create_options(suffix: str) -> list[str]:
             return []
 
 
-def get_dst_dataset(src_dataset: Path, dst_dataset: Path, *, multi: bool) -> Path:
+def _get_dst_dataset(src_dataset: Path, dst_dataset: Path, *, multi: bool) -> Path:
     """Return the correct destination path based on file type or multi format."""
     if not multi:
         return dst_dataset / (src_dataset.stem + dst_dataset.suffix)
@@ -23,23 +23,23 @@ def get_dst_dataset(src_dataset: Path, dst_dataset: Path, *, multi: bool) -> Pat
     return dst_dataset
 
 
-def to_multilayer(src_dataset: Path, dst_dataset: Path, *, multi: bool) -> None:
+def _to_multilayer(src_dataset: Path, dst_dataset: Path, *, multi: bool) -> None:
     """Use GDAL to turn a GeoParquet into a generic layer."""
-    lco = get_layer_create_options(dst_dataset.suffixes[0])
+    lco = _get_layer_create_options(dst_dataset.suffixes[0])
     output_options = [f"--nln={src_dataset.stem}"] if multi else []
-    dst_dataset = get_dst_dataset(src_dataset, dst_dataset, multi=multi)
+    dst_dataset = _get_dst_dataset(src_dataset, dst_dataset, multi=multi)
     dst_dataset.parent.mkdir(parents=True, exist_ok=True)
     mode = "--append" if dst_dataset.exists() else "--overwrite"
     run(
         [
             *["gdal", "vector", "convert"],
-            "--quiet",
+            # "--quiet", ADD THIS BACK IN GDAL 3.12
             *[src_dataset, dst_dataset],
             mode,
             *lco,
             *output_options,
         ],
-        check=True,
+        check=False,
     )
 
 
@@ -53,7 +53,7 @@ def main(iso3_dir: Path, iso3: str) -> None:
     ]:
         for src_dataset in sorted(iso3_dir.glob("*.parquet")):
             dst_dataset = iso3_dir / f"{iso3.lower()}_admin_boundaries.{ext}"
-            to_multilayer(src_dataset, dst_dataset, multi=multi)
+            _to_multilayer(src_dataset, dst_dataset, multi=multi)
         if dst_dataset.is_dir():
             make_archive(str(dst_dataset), "zip", dst_dataset)
             rmtree(dst_dataset)

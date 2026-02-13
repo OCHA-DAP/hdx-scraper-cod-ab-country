@@ -38,8 +38,11 @@ exclude = ["_version.py"]
 fix = true
 lint.select = ["ALL"]
 lint.ignore = [
+    "COM812",
     "D100",
     "D104",
+    "D203",
+    "D213",
     "INP001",
     "PD010",
     "S603",
@@ -48,8 +51,8 @@ lint.ignore = [
     "TID252",
 ]
 
-[tool.taskipy]
+[tool.taskipy.tasks]
 # uv run task app
-tasks.app = "python run.py"
-tasks.ruff = "ruff format && ruff check && ruff format"
-tasks.test = "pytest --rootdir=. --junitxml=test-results.xml --cov --no-cov-on-fail --cov-report=lcov --cov-report=term-missing"
+app = "python run.py"
+ruff = "ruff format && ruff check && ruff format"
+test = "pytest --rootdir=. --junitxml=test-results.xml --cov --no-cov-on-fail --cov-report=lcov --cov-report=term-missing"

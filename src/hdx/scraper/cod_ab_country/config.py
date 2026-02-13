@@ -48,8 +48,8 @@ iso3_exclude_cfg = [
 
 gdal_parquet_options = [
     "--overwrite",
-    "--quiet",
-    # "--lco=USE_PARQUET_GEO_TYPES=YES", not yet supported in Docker
-    "--lco=COMPRESSION_LEVEL=15",
+    # "--quiet", ADD THIS BACK IN GDAL 3.12
+    # "--lco=USE_PARQUET_GEO_TYPES=YES", ADD THIS BACK IN GDAL 3.12
+    # "--lco=COMPRESSION_LEVEL=15", ADD THIS BACK IN GDAL 3.12
     "--lco=COMPRESSION=ZSTD",
 ]

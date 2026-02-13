@@ -8,7 +8,7 @@ from hdx.data.resource import Resource
 from hdx.location.country import Country
 
 from .config import OCHA_ORG_NAME
-from .dataset_utils import compare_geodata
+from .geodata.compare import compare_geodata
 
 logger = logging.getLogger(__name__)
 

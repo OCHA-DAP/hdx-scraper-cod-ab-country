@@ -6,7 +6,7 @@ from subprocess import PIPE, run
 from hdx.data.dataset import Dataset
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from .config import ATTEMPT, WAIT
+from ..config import ATTEMPT, WAIT
 
 
 @retry(stop=stop_after_attempt(ATTEMPT), wait=wait_fixed(WAIT))
@@ -29,7 +29,8 @@ def _download_geodata_from_hdx(
 def _list_layers(input_path: Path) -> list[str]:
     """List layers in a GeoPackage."""
     result = run(
-        ["gdal", "vector", "info", "--summary", "--format=json", input_path],
+        # ["gdal", "vector", "info", "--summary", "--format=json", input_path], ADD THIS BACK IN GDAL 3.12  # noqa: E501
+        ["ogrinfo", "-al", "-so", "-json", input_path],
         check=False,
         stdout=PIPE,
     )
@@ -47,7 +48,7 @@ def _convert_geodata(input_path: Path, output_dir: Path, var: str) -> Path:
                 *["gdal", "vector", "convert"],
                 *[input_path, var_path / f"{layer}.geojson"],
                 *["--layer", layer],
-                "--quiet",
+                # "--quiet", ADD THIS BACK IN GDAL 3.12
                 "--overwrite",
             ],
             check=False,

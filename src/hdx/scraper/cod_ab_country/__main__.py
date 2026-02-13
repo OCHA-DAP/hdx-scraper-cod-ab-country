@@ -7,12 +7,12 @@ from hdx.facades.infer_arguments import facade
 from hdx.utilities.path import wheretostart_tempdir_batch
 from tqdm import tqdm
 
-from . import formats
+from .arcgis import generate_token, get_layer_list, get_metadata
 from .config import iso3_exclude_cfg, iso3_include_cfg
 from .dataset import generate_dataset
 from .download.boundaries import download_boundaries
 from .download.metadata import download_metadata
-from .utils import generate_token, get_layer_list, get_metadata
+from .geodata import formats
 
 logger = logging.getLogger(__name__)
 cwd = Path(__file__).parent

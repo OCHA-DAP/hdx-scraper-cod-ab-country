@@ -75,7 +75,7 @@ class TestCODAB:
 
             # Mock compare_gdb to return local path (skip HDX download)
             with patch(
-                "hdx.scraper.cod_ab_country.dataset.compare_gdb",
+                "hdx.scraper.cod_ab_country.dataset.compare_geodata",
                 side_effect=lambda path, _: path,
             ):
                 dataset = generate_dataset(iso3_dir, iso3, metadata)

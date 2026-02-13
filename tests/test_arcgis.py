@@ -1,13 +1,13 @@
 # flake8: noqa: S101
 # ruff: noqa: D102
-"""Tests for utils module."""
+"""Tests for arcgis module."""
 
 from pathlib import Path
 from unittest.mock import patch
 
 import pandas as pd
 
-from hdx.scraper.cod_ab_country.utils import get_layer_list, get_metadata
+from hdx.scraper.cod_ab_country.arcgis import get_layer_list, get_metadata
 
 
 class TestGetLayerList:
@@ -24,7 +24,7 @@ class TestGetLayerList:
         )
         df.to_parquet(metadata_dir / "metadata_latest.parquet")
 
-        with patch("hdx.scraper.cod_ab_country.utils.iso3_include", []):
+        with patch("hdx.scraper.cod_ab_country.arcgis.iso3_include_cfg", []):
             result = get_layer_list(tmp_path)
             assert result == [("AFG", "v1"), ("BFA", "v2"), ("CAF", "v1")]
 
@@ -39,7 +39,9 @@ class TestGetLayerList:
         )
         df.to_parquet(metadata_dir / "metadata_latest.parquet")
 
-        with patch("hdx.scraper.cod_ab_country.utils.iso3_include", ["AFG", "CAF"]):
+        with patch(
+            "hdx.scraper.cod_ab_country.arcgis.iso3_include_cfg", ["AFG", "CAF"]
+        ):
             result = get_layer_list(tmp_path)
             assert result == [("AFG", "v1"), ("CAF", "v1")]
 
@@ -54,7 +56,7 @@ class TestGetLayerList:
         )
         df.to_parquet(metadata_dir / "metadata_latest.parquet")
 
-        with patch("hdx.scraper.cod_ab_country.utils.iso3_include", ["AFG_V3"]):
+        with patch("hdx.scraper.cod_ab_country.arcgis.iso3_include_cfg", ["AFG_V3"]):
             result = get_layer_list(tmp_path)
             assert result == [("AFG", "v3")]
 

@@ -1,4 +1,4 @@
-FROM ghcr.io/osgeo/gdal:alpine-normal-3.12.2
+FROM public.ecr.aws/unocha/python:3.13-stable
 
 WORKDIR /srv
 
@@ -11,8 +11,9 @@ RUN --mount=type=bind,source=pyproject.toml,target=/srv/pyproject.toml \
     --mount=type=bind,source=uv.lock,target=/srv/uv.lock \
     --mount=type=bind,source=src,target=/srv/src,rw \
     --mount=type=bind,source=.git,target=/srv/.git \
-    addgroup -g 4000 -S appuser && \
-    adduser -u 4000 -s /sbin/nologin -g 'Docker App User' -h /home/appuser -D -G appuser appuser && \
+    apk add --no-cache \
+    gdal-driver-parquet \
+    gdal-tools && \
     apk add --no-cache --virtual .build-deps \
     build-base \
     gdal-dev \

@@ -48,19 +48,18 @@ uv run task ruff
 src/hdx/scraper/cod_ab_country/
 ├── __main__.py              # Entry point, main pipeline
 ├── config.py                # Configuration/environment variables
-├── utils.py                 # Core utilities (token, HTTP client, metadata access)
+├── arcgis.py                # Core utilities (token, HTTP client, metadata access)
 ├── dataset.py               # HDX dataset generation
-├── dataset_utils.py         # GDB comparison to detect changes
-├── formats.py               # Format conversion (GDB/SHP/GeoJSON/XLSX)
+├── geodata/
+│   ├── compare.py           # GDB comparison to detect changes
+│   └── formats.py           # Format conversion (GDB/SHP/GeoJSON/XLSX)
 ├── download/
-│   ├── utils.py             # Field parsing from ArcGIS
 │   ├── metadata/
 │   │   ├── __init__.py      # Download global metadata
-│   │   └── refactor.py      # Transform metadata table
+│   │   └── process.py       # Transform metadata table
 │   └── boundaries/
 │       ├── __init__.py      # Download country boundaries
-│       ├── feature.py       # Download individual feature layer
-│       └── refactor.py      # Normalize boundary data
+│       └── process.py       # Normalize boundary data
 └── config/
     └── hdx_dataset_static.yaml  # Static HDX metadata (license, etc.)
 ```
@@ -68,12 +67,12 @@ src/hdx/scraper/cod_ab_country/
 ### Key Modules
 
 - **`config.py`**: Centralizes all configuration via environment variables (ArcGIS credentials, retry settings, GDAL options, ISO3 filtering)
-- **`utils.py`**: HTTP client with retry logic (tenacity), token generation, layer list extraction, metadata retrieval
-- **`download/metadata/`**: Downloads global metadata table via ESRIJSON, refactors into two Parquet files (all versions + latest)
+- **`arcgis.py`**: HTTP client with retry logic (tenacity), token generation, layer list extraction, metadata retrieval
+- **`download/metadata/`**: Downloads global metadata table via ESRIJSON, processes it into two Parquet files (all versions + latest)
 - **`download/boundaries/`**: Downloads Feature Layers per country, converts ESRIJSON to normalized GeoParquet
-- **`formats.py`**: Converts GeoParquet to GDB, SHP (zipped), GeoJSON, and XLSX using GDAL CLI
+- **`geodata/formats.py`**: Converts GeoParquet to GDB, SHP (zipped), GeoJSON, and XLSX using GDAL CLI
+- **`geodata/compare.py`**: SHA256 comparison of GDB files to prevent re-uploading unchanged data
 - **`dataset.py`**: Builds HDX Dataset objects with metadata, notes, tags, and file resources
-- **`dataset_utils.py`**: SHA256 comparison of GDB files to prevent re-uploading unchanged data
 
 ### Data Flow
 
@@ -119,6 +118,15 @@ src/hdx/scraper/cod_ab_country/
 - **Resource Reuse Detection**: SHA256 comparison of GDB files prevents unnecessary uploads
 - **GDAL CLI Processing**: Geometry validation and format conversion handled by GDAL commands
 
+### Docker
+
+The project uses the UNOCHA base image (`public.ecr.aws/unocha/python:3.13-stable`) which pre-bundles GDAL and other geospatial dependencies. Additional Alpine packages installed at build time:
+
+- `gdal-driver-parquet` + `gdal-tools` (runtime)
+- `build-base`, `gdal-dev`, `git`, `python3-dev`, `uv` (build-only, removed after install)
+
+`uv sync --frozen --no-dev --no-editable` installs deps into `/opt/venv`.
+
 ### Required Configuration
 
 Environment variables (or `.env` file):
@@ -135,3 +143,11 @@ Home directory files:
 
 - GDAL CLI tools (`gdal`) must be installed and in PATH
 - HDX Python libraries (`hdx-python-api`, `hdx-python-country`, `hdx-python-utilities`)
+
+## Code Style
+
+- **Formatter/linter**: `ruff` — run `uv run task ruff` before committing
+- **All ruff rules enabled** with a small ignore list (see `pyproject.toml`)
+- Config files are consolidated in `pyproject.toml` (no separate `hatch.toml`, `pytest.ini`, or `ruff.toml`)
+- Use `uv` for all dependency management — do not use `pip` directly
+- Tests live in `tests/` and mirror the module structure (e.g. `test_arcgis.py`, `test_geodata_compare.py`)

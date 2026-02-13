@@ -184,3 +184,5 @@ plans/
 # test results
 test-results.xml
 coverage.lcov
+
+CLAUDE.md

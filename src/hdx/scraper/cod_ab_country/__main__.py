@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 cwd = Path(__file__).parent
 
 _USER_AGENT_LOOKUP = "hdx-scraper-cod-ab"
-_SAVED_DATA_DIR = (cwd / "../../../../saved_data").resolve()
+_SAVED_DATA_DIR = "saved_data"
 _UPDATED_BY_SCRIPT = "HDX Scraper: COD-AB Country"
 
 

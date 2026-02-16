@@ -8,7 +8,7 @@ from hdx.utilities.path import wheretostart_tempdir_batch
 from tqdm import tqdm
 
 from .arcgis import generate_token, get_layer_list, get_metadata
-from .config import iso3_exclude_cfg, iso3_include_cfg
+from .config import iso3_exclude_cfg, iso3_include_cfg, TEMP_DIR
 from .dataset import generate_dataset
 from .download.boundaries import download_boundaries
 from .download.metadata import download_metadata
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 cwd = Path(__file__).parent
 
 _USER_AGENT_LOOKUP = "hdx-scraper-cod-ab"
-_SAVED_DATA_DIR = "saved_data"
+_SAVED_DATA_DIR = f"{TEMP_DIR}/saved_data"
 _UPDATED_BY_SCRIPT = "HDX Scraper: COD-AB Country"
 
 

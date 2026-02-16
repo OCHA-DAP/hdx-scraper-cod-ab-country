@@ -37,6 +37,8 @@ EXPIRATION = int(getenv("EXPIRATION", "1440"))  # minutes (1 day)
 
 ISO3_EXCLUDE_DEFAULTS = "COL,ECU,IDN,MAF,PHL,QAT,SSD"
 
+TEMP_DIR = getenv("TEMP_DIR", ".")
+
 iso3_include_cfg = [
     x.strip() for x in getenv("ISO3_INCLUDE", "").upper().split(",") if x.strip()
 ]

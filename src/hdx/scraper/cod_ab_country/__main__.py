@@ -1,4 +1,3 @@
-import logging
 from pathlib import Path
 from shutil import rmtree
 
@@ -14,7 +13,6 @@ from .download.boundaries import download_boundaries
 from .download.metadata import download_metadata
 from .geodata import formats
 
-logger = logging.getLogger(__name__)
 cwd = Path(__file__).parent
 
 _USER_AGENT_LOOKUP = "hdx-scraper-cod-ab"
@@ -22,25 +20,30 @@ _SAVED_DATA_DIR = "saved_data"
 _UPDATED_BY_SCRIPT = "HDX Scraper: COD-AB Country"
 
 
-def create_country_dataset(
+def _create_country_dataset(  # noqa: PLR0913
     info: dict,
     data_dir: Path,
     token: str,
     iso3: str,
     version: str,
+    force: bool = False,  # noqa: FBT001, FBT002
 ) -> None:
     """Create a dataset for a country."""
     iso3_dir = data_dir / "boundaries" / iso3.lower()
     rmtree(iso3_dir, ignore_errors=True)
     iso3_dir.mkdir(parents=True)
-    download_boundaries(iso3_dir, token, iso3, version)
-    formats.main(iso3_dir, iso3)
+    download_boundaries(iso3_dir, token, iso3, version, force=force)
+    layers_downloaded = any(iso3_dir.glob("*.parquet"))
+    if layers_downloaded:
+        formats.main(iso3_dir, iso3)
     metadata = get_metadata(data_dir, iso3, version)
-    dataset = generate_dataset(iso3_dir, iso3, metadata)
+    dataset = generate_dataset(
+        iso3_dir, iso3, metadata, with_resources=layers_downloaded
+    )
     if dataset:
         dataset.update_from_yaml(path=str(cwd / "config/hdx_dataset_static.yaml"))
         dataset.create_in_hdx(
-            remove_additional_resources=True,
+            remove_additional_resources=layers_downloaded,
             match_resource_order=False,
             hxl_update=False,
             updated_by_script=_UPDATED_BY_SCRIPT,
@@ -54,6 +57,7 @@ def main(
     iso3_exclude: str = "",
     save: bool = True,  # noqa: FBT001, FBT002
     use_saved: bool = False,  # noqa: FBT001, FBT002
+    force: bool = False,  # noqa: FBT001, FBT002
 ) -> None:
     """Generate datasets and create them in HDX."""
     Configuration.read()
@@ -77,7 +81,7 @@ def main(
         pbar = tqdm(layer_list)
         for iso3, version in pbar:
             pbar.set_postfix_str(iso3)
-            create_country_dataset(info, data_dir, token, iso3, version)
+            _create_country_dataset(info, data_dir, token, iso3, version, force=force)
         rmtree(data_dir)
 
 

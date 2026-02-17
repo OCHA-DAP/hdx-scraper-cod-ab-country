@@ -12,7 +12,7 @@ from .geodata.compare import compare_geodata
 
 logger = logging.getLogger(__name__)
 
-format_types = [
+_format_types = [
     ("gdb.zip", "Geodatabase"),
     ("shp.zip", "SHP"),
     ("geojson.zip", "GeoJSON"),
@@ -20,7 +20,7 @@ format_types = [
 ]
 
 
-def initialize_dataset(iso3: str) -> Dataset | None:
+def _initialize_dataset(iso3: str) -> Dataset | None:
     """Initialize a dataset."""
     country_name = Country.get_country_name_from_iso3(iso3)
     if not country_name:
@@ -30,7 +30,7 @@ def initialize_dataset(iso3: str) -> Dataset | None:
     return Dataset({"name": f"cod-ab-{iso3.lower()}", "title": dataset_title})
 
 
-def add_metadata(iso3: str, metadata: dict, dataset: Dataset) -> Dataset | None:
+def _add_metadata(iso3: str, metadata: dict, dataset: Dataset) -> Dataset | None:
     """Add metadata to a dataset."""
     dataset_time_start = metadata["date_valid_on"]
     dataset_time_end = metadata["date_reviewed"] or dataset_time_start
@@ -60,7 +60,7 @@ def add_metadata(iso3: str, metadata: dict, dataset: Dataset) -> Dataset | None:
     return dataset
 
 
-def get_notes(iso3: str, metadata: dict) -> str:
+def _get_notes(iso3: str, metadata: dict) -> str:
     """Compile notes for a dataset."""
     country_name = Country.get_country_name_from_iso3(iso3)
     admin_levels = metadata["admin_level_max"]
@@ -129,7 +129,7 @@ def get_notes(iso3: str, metadata: dict) -> str:
     return "  \n".join(lines)
 
 
-def add_resources(
+def _add_resources(
     iso3_dir: Path,
     iso3: str,
     metadata: dict,
@@ -139,7 +139,7 @@ def add_resources(
     admin_level = metadata["admin_level_max"]
     country_name = Country.get_country_name_from_iso3(iso3)
     admin_level_range = "0" if admin_level == 0 else f"0-{admin_level}"
-    for ext, format_type in format_types:
+    for ext, format_type in _format_types:
         resource_name = f"{iso3.lower()}_admin_boundaries.{ext}"
         resource_desc = f"{country_name} administrative level {admin_level_range} boundaries (COD-AB), {format_type}"
         resource_data = {"name": resource_name, "description": resource_desc}
@@ -159,13 +159,20 @@ def add_resources(
     return dataset
 
 
-def generate_dataset(iso3_dir: Path, iso3: str, metadata: dict) -> Dataset | None:
+def generate_dataset(
+    iso3_dir: Path,
+    iso3: str,
+    metadata: dict,
+    with_resources: bool = True,  # noqa: FBT001, FBT002
+) -> Dataset | None:
     """Generate a dataset for a country."""
-    dataset = initialize_dataset(iso3)
+    dataset = _initialize_dataset(iso3)
     if not dataset:
         return None
-    dataset = add_metadata(iso3, metadata, dataset)
+    dataset = _add_metadata(iso3, metadata, dataset)
     if not dataset:
         return None
-    dataset["notes"] = get_notes(iso3, metadata)
-    return add_resources(iso3_dir, iso3, metadata, dataset)
+    dataset["notes"] = _get_notes(iso3, metadata)
+    if not with_resources:
+        return dataset
+    return _add_resources(iso3_dir, iso3, metadata, dataset)

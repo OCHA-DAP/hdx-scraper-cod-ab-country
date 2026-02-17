@@ -71,7 +71,7 @@ class TestToMultilayer:
         src = tmp_path / "adm1.parquet"
         dst = tmp_path / "subdir" / "output.geojson"
 
-        with patch("hdx.scraper.cod_ab_country.formats.run"):
+        with patch("hdx.scraper.cod_ab_country.geodata.formats.run"):
             _to_multilayer(src, dst, multi=False)
             assert dst.parent.exists()
 
@@ -79,7 +79,7 @@ class TestToMultilayer:
         src = tmp_path / "adm1.parquet"
         dst = tmp_path / "output.geojson"
 
-        with patch("hdx.scraper.cod_ab_country.formats.run") as mock_run:
+        with patch("hdx.scraper.cod_ab_country.geodata.formats.run") as mock_run:
             _to_multilayer(src, dst, multi=False)
 
             mock_run.assert_called_once()
@@ -92,7 +92,7 @@ class TestToMultilayer:
         dst = tmp_path / "output.xlsx"
         dst.touch()
 
-        with patch("hdx.scraper.cod_ab_country.formats.run") as mock_run:
+        with patch("hdx.scraper.cod_ab_country.geodata.formats.run") as mock_run:
             _to_multilayer(src, dst, multi=True)
 
             mock_run.assert_called_once()
@@ -104,7 +104,7 @@ class TestToMultilayer:
         src = tmp_path / "adm1.parquet"
         dst = tmp_path / "output.xlsx"
 
-        with patch("hdx.scraper.cod_ab_country.formats.run") as mock_run:
+        with patch("hdx.scraper.cod_ab_country.geodata.formats.run") as mock_run:
             _to_multilayer(src, dst, multi=True)
 
             mock_run.assert_called_once()
@@ -115,7 +115,7 @@ class TestToMultilayer:
         src = tmp_path / "adm1.parquet"
         dst = tmp_path / "output.geojson"
 
-        with patch("hdx.scraper.cod_ab_country.formats.run") as mock_run:
+        with patch("hdx.scraper.cod_ab_country.geodata.formats.run") as mock_run:
             _to_multilayer(src, dst, multi=False)
 
             mock_run.assert_called_once()
@@ -127,7 +127,7 @@ class TestToMultilayer:
         dst = tmp_path / "output.gdb"
         (tmp_path / "output.gdb").mkdir()
 
-        with patch("hdx.scraper.cod_ab_country.formats.run") as mock_run:
+        with patch("hdx.scraper.cod_ab_country.geodata.formats.run") as mock_run:
             _to_multilayer(src, dst, multi=True)
 
             mock_run.assert_called_once()
@@ -138,7 +138,7 @@ class TestToMultilayer:
         src = tmp_path / "adm1.parquet"
         dst = tmp_path / "output.shp.zip"
 
-        with patch("hdx.scraper.cod_ab_country.formats.run") as mock_run:
+        with patch("hdx.scraper.cod_ab_country.geodata.formats.run") as mock_run:
             _to_multilayer(src, dst, multi=True)
 
             mock_run.assert_called_once()

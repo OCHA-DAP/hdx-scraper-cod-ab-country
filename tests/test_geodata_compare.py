@@ -18,7 +18,7 @@ class TestDownloadGdbFromHdx:
 
     def test_returns_none_when_dataset_not_found(self, tmp_path: Path) -> None:
         with patch(
-            "hdx.scraper.cod_ab_country.geodata_compare.Dataset.read_from_hdx",
+            "hdx.scraper.cod_ab_country.geodata.compare.Dataset.read_from_hdx",
             return_value=None,
         ):
             result = _download_geodata_from_hdx("test.gdb.zip", "cod-ab-test", tmp_path)
@@ -31,7 +31,7 @@ class TestDownloadGdbFromHdx:
         mock_dataset.get_resources.return_value = [mock_resource]
 
         with patch(
-            "hdx.scraper.cod_ab_country.geodata_compare.Dataset.read_from_hdx",
+            "hdx.scraper.cod_ab_country.geodata.compare.Dataset.read_from_hdx",
             return_value=mock_dataset,
         ):
             result = _download_geodata_from_hdx("test.gdb.zip", "cod-ab-test", tmp_path)
@@ -49,7 +49,7 @@ class TestDownloadGdbFromHdx:
         mock_dataset.get_resources.return_value = [mock_resource]
 
         with patch(
-            "hdx.scraper.cod_ab_country.geodata_compare.Dataset.read_from_hdx",
+            "hdx.scraper.cod_ab_country.geodata.compare.Dataset.read_from_hdx",
             return_value=mock_dataset,
         ):
             result = _download_geodata_from_hdx("test.gdb.zip", "cod-ab-test", tmp_path)
@@ -65,11 +65,11 @@ class TestConvertGdbToGpkg:
 
         with (
             patch(
-                "hdx.scraper.cod_ab_country.geodata_compare._list_layers",
+                "hdx.scraper.cod_ab_country.geodata.compare._list_layers",
                 return_value=["layer1"],
             ),
             patch(
-                "hdx.scraper.cod_ab_country.geodata_compare.run",
+                "hdx.scraper.cod_ab_country.geodata.compare.run",
             ) as mock_run,
         ):
             result = _convert_geodata(gdb_path, tmp_path, "x")
@@ -99,7 +99,7 @@ class TestIsFileSame:
         (dir_b / "layer.geojson").write_bytes(b"identical content")
 
         with patch(
-            "hdx.scraper.cod_ab_country.geodata_compare._convert_geodata",
+            "hdx.scraper.cod_ab_country.geodata.compare._convert_geodata",
             side_effect=[dir_a, dir_b],
         ):
             result = _is_file_same(file_a, file_b)
@@ -116,7 +116,7 @@ class TestIsFileSame:
         (dir_b / "layer.geojson").write_bytes(b"content b")
 
         with patch(
-            "hdx.scraper.cod_ab_country.geodata_compare._convert_geodata",
+            "hdx.scraper.cod_ab_country.geodata.compare._convert_geodata",
             side_effect=[dir_a, dir_b],
         ):
             result = _is_file_same(file_a, file_b)
@@ -131,7 +131,7 @@ class TestCompareGdb:
         local_path.touch()
 
         with patch(
-            "hdx.scraper.cod_ab_country.geodata_compare._download_geodata_from_hdx",
+            "hdx.scraper.cod_ab_country.geodata.compare._download_geodata_from_hdx",
             return_value=None,
         ):
             result = compare_geodata(local_path, "cod-ab-test")
@@ -144,11 +144,11 @@ class TestCompareGdb:
 
         with (
             patch(
-                "hdx.scraper.cod_ab_country.geodata_compare._download_geodata_from_hdx",
+                "hdx.scraper.cod_ab_country.geodata.compare._download_geodata_from_hdx",
                 return_value=remote_path,
             ),
             patch(
-                "hdx.scraper.cod_ab_country.geodata_compare._is_file_same",
+                "hdx.scraper.cod_ab_country.geodata.compare._is_file_same",
                 return_value=True,
             ),
         ):
@@ -162,11 +162,11 @@ class TestCompareGdb:
 
         with (
             patch(
-                "hdx.scraper.cod_ab_country.geodata_compare._download_geodata_from_hdx",
+                "hdx.scraper.cod_ab_country.geodata.compare._download_geodata_from_hdx",
                 return_value=remote_path,
             ),
             patch(
-                "hdx.scraper.cod_ab_country.geodata_compare._is_file_same",
+                "hdx.scraper.cod_ab_country.geodata.compare._is_file_same",
                 return_value=False,
             ),
         ):
@@ -178,7 +178,7 @@ class TestCompareGdb:
         local_path.touch()
 
         with patch(
-            "hdx.scraper.cod_ab_country.geodata_compare._download_geodata_from_hdx",
+            "hdx.scraper.cod_ab_country.geodata.compare._download_geodata_from_hdx",
             return_value=None,
         ):
             compare_geodata(local_path, "cod-ab-test")

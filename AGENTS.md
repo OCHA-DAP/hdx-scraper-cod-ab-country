@@ -11,8 +11,7 @@ This is an HDX (Humanitarian Data Exchange) scraper that downloads Common Operat
 ```shell
 # Setup environment
 uv sync
-source .venv/bin/activate
-pre-commit install
+uv run pre-commit install
 
 # Run the pipeline
 python run.py
@@ -36,6 +35,7 @@ uv run task ruff
 1. **Token Generation**: Authenticates with ArcGIS Server via `generate_token()`
 2. **Metadata Download**: Downloads global COD metadata table, refactors it into `metadata_all.parquet` (all versions) and `metadata_latest.parquet` (latest per country)
 3. **Layer Iteration**: For each country (ISO3 code):
+   - Checks layer timestamps; skips download if no layers were modified (bypass with `--force`)
    - Downloads boundary Feature Layers as GeoParquet
    - Converts to multiple formats (GDB, SHP, GeoJSON, XLSX) using GDAL
    - Generates HDX dataset with metadata and resources
@@ -44,7 +44,7 @@ uv run task ruff
 
 ### Directory Structure
 
-```
+```shell
 src/hdx/scraper/cod_ab_country/
 ├── __main__.py              # Entry point, main pipeline
 ├── config.py                # Configuration/environment variables
@@ -76,7 +76,7 @@ src/hdx/scraper/cod_ab_country/
 
 ### Data Flow
 
-```
+```shell
 ┌─────────────────────────────────────────────────────┐
 │         ArcGIS Server (gis.unocha.org)              │
 │    COD_Global_Metadata + cod_ab_XXX_vYY services    │
@@ -115,6 +115,7 @@ src/hdx/scraper/cod_ab_country/
 - **Retry with Tenacity**: All external HTTP calls wrapped with `@retry` decorator
 - **GeoParquet Intermediate**: All data flows through GeoParquet before format conversion
 - **Two-tier Metadata**: Maintains both all-versions and latest-version metadata tables
+- **Timestamp Skip**: `download_boundaries` checks layer edit timestamps and skips unchanged countries; pass `--force` to bypass
 - **Resource Reuse Detection**: SHA256 comparison of GDB files prevents unnecessary uploads
 - **GDAL CLI Processing**: Geometry validation and format conversion handled by GDAL commands
 

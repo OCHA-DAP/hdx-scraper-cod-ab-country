@@ -35,7 +35,7 @@ def download_boundaries(
         any_modified = any(
             dt > cutoff_utc
             for layer in feature_layers
-            for dt in parse_metadata_datetimes(f"{url}/{layer['id']}", params)
+            for dt in parse_metadata_datetimes(f"{url}/{layer['id']}", params, url)
         )
         if not any_modified:
             logger.info(

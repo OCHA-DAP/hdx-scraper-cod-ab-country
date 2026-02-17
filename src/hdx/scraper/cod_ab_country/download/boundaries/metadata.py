@@ -1,7 +1,12 @@
+import logging
 from datetime import UTC, datetime
-from xml.etree.ElementTree import fromstring
+from xml.etree.ElementTree import ParseError
+
+from defusedxml.ElementTree import fromstring
 
 from ...arcgis import client_get
+
+logger = logging.getLogger(__name__)
 
 _DATE_LEN = 8
 _DATE_TIME_PAIRS = [
@@ -27,10 +32,23 @@ def _parse_date_time(date_str: str, time_str: str) -> datetime | None:
         return None
 
 
-def parse_metadata_datetimes(url: str, params: dict) -> list[datetime]:
+def parse_metadata_datetimes(
+    url: str, params: dict, service_url: str
+) -> list[datetime]:
     """Fetch layer metadata XML and return all UTC datetimes found."""
     response = client_get(f"{url}/metadata", params)
-    root = fromstring(response.text)  # noqa: S314
+    try:
+        root = fromstring(response.text)
+    except ParseError:
+        logger.warning("Failed to parse metadata XML from %s/metadata", url)
+        response = client_get(f"{service_url}/info/metadata", params)
+        try:
+            root = fromstring(response.text)
+        except ParseError:
+            logger.warning(
+                "Failed to parse metadata XML from %s/info/metadata", service_url
+            )
+            return []
     datetimes = []
     esri = root.find("Esri")
     if esri is not None:
@@ -46,9 +64,4 @@ def parse_metadata_datetimes(url: str, params: dict) -> list[datetime]:
                 dt = _parse_date_time(date_el.text, time_str)
                 if dt is not None:
                     datetimes.append(dt)
-    mddate_el = root.find("mdDateSt")
-    if mddate_el is not None and mddate_el.text and len(mddate_el.text) == _DATE_LEN:
-        dt = _parse_date_time(mddate_el.text, "00000000")
-        if dt is not None:
-            datetimes.append(dt)
     return datetimes

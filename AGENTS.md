@@ -58,7 +58,9 @@ src/hdx/scraper/cod_ab_country/
 │   │   ├── __init__.py      # Download global metadata
 │   │   └── process.py       # Transform metadata table
 │   └── boundaries/
-│       ├── __init__.py      # Download country boundaries
+│       ├── __init__.py      # Orchestrate country boundary downloads
+│       ├── download.py      # ESRIJSON feature download via ogr2ogr
+│       ├── metadata.py      # ArcGIS metadata XML parsing (timestamps)
 │       └── process.py       # Normalize boundary data
 └── config/
     └── hdx_dataset_static.yaml  # Static HDX metadata (license, etc.)
@@ -69,7 +71,7 @@ src/hdx/scraper/cod_ab_country/
 - **`config.py`**: Centralizes all configuration via environment variables (ArcGIS credentials, retry settings, GDAL options, ISO3 filtering)
 - **`arcgis.py`**: HTTP client with retry logic (tenacity), token generation, layer list extraction, metadata retrieval
 - **`download/metadata/`**: Downloads global metadata table via ESRIJSON, processes it into two Parquet files (all versions + latest)
-- **`download/boundaries/`**: Downloads Feature Layers per country, converts ESRIJSON to normalized GeoParquet
+- **`download/boundaries/`**: Downloads Feature Layers per country; `__init__.py` orchestrates, `download.py` fetches ESRIJSON via `ogr2ogr`, `metadata.py` parses ArcGIS XML metadata to extract timestamps for skip logic
 - **`geodata/formats.py`**: Converts GeoParquet to GDB, SHP (zipped), GeoJSON, and XLSX using GDAL CLI
 - **`geodata/compare.py`**: SHA256 comparison of GDB files to prevent re-uploading unchanged data
 - **`dataset.py`**: Builds HDX Dataset objects with metadata, notes, tags, and file resources
@@ -115,7 +117,7 @@ src/hdx/scraper/cod_ab_country/
 - **Retry with Tenacity**: All external HTTP calls wrapped with `@retry` decorator
 - **GeoParquet Intermediate**: All data flows through GeoParquet before format conversion
 - **Two-tier Metadata**: Maintains both all-versions and latest-version metadata tables
-- **Timestamp Skip**: `download_boundaries` checks layer edit timestamps and skips unchanged countries; pass `--force` to bypass
+- **Timestamp Skip**: `download_boundaries` fetches ArcGIS metadata XML per layer, parses `CreaDate/Time`, `SyncDate/Time`, `ModDate/Time`, and skips if no layer was modified in the last 1.5 days; pass `--force` to bypass
 - **Resource Reuse Detection**: SHA256 comparison of GDB files prevents unnecessary uploads
 - **GDAL CLI Processing**: Geometry validation and format conversion handled by GDAL commands
 

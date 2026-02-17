@@ -7,6 +7,7 @@ name = "hdx-scraper-cod-ab-country"
 dynamic = ["version"]
 requires-python = ">=3.12"
 dependencies = [
+    "defusedxml",
     "geopandas",
     "hdx-python-api",
     "hdx-python-country",

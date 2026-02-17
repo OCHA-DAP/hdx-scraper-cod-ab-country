@@ -7,7 +7,7 @@ from hdx.utilities.path import wheretostart_tempdir_batch
 from tqdm import tqdm
 
 from .arcgis import generate_token, get_layer_list, get_metadata
-from .config import iso3_exclude_cfg, iso3_include_cfg, TEMP_DIR
+from .config import TEMP_DIR, iso3_exclude_cfg, iso3_include_cfg
 from .dataset import generate_dataset
 from .download.boundaries import download_boundaries
 from .download.metadata import download_metadata
@@ -33,17 +33,16 @@ def _create_country_dataset(  # noqa: PLR0913
     rmtree(iso3_dir, ignore_errors=True)
     iso3_dir.mkdir(parents=True)
     download_boundaries(iso3_dir, token, iso3, version, force=force)
-    layers_downloaded = any(iso3_dir.glob("*.parquet"))
-    if layers_downloaded:
-        formats.main(iso3_dir, iso3)
+    if not any(iso3_dir.glob("*.parquet")):
+        rmtree(iso3_dir)
+        return
+    formats.main(iso3_dir, iso3)
     metadata = get_metadata(data_dir, iso3, version)
-    dataset = generate_dataset(
-        iso3_dir, iso3, metadata, with_resources=layers_downloaded
-    )
+    dataset = generate_dataset(iso3_dir, iso3, metadata)
     if dataset:
         dataset.update_from_yaml(path=str(cwd / "config/hdx_dataset_static.yaml"))
         dataset.create_in_hdx(
-            remove_additional_resources=layers_downloaded,
+            remove_additional_resources=True,
             match_resource_order=False,
             hxl_update=False,
             updated_by_script=_UPDATED_BY_SCRIPT,

@@ -35,8 +35,8 @@ uv run task ruff
 1. **Token Generation**: Authenticates with ArcGIS Server via `generate_token()`
 2. **Metadata Download**: Downloads global COD metadata table, refactors it into `metadata_all.parquet` (all versions) and `metadata_latest.parquet` (latest per country)
 3. **Layer Iteration**: For each country (ISO3 code):
-   - Checks layer timestamps; skips download if no layers were modified (bypass with `--force`)
-   - Downloads boundary Feature Layers as GeoParquet
+   - Downloads boundary Feature Layers as GeoParquet (`download_boundaries`); checks layer timestamps and skips unchanged layers unless `--force` is passed
+   - If no `.parquet` files were produced, skips the country entirely (no format conversion, no HDX upload)
    - Converts to multiple formats (GDB, SHP, GeoJSON, XLSX) using GDAL
    - Generates HDX dataset with metadata and resources
    - Compares GDB with existing HDX version to avoid unnecessary uploads

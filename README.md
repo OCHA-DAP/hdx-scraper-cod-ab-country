@@ -14,8 +14,7 @@ This script downloads the latest Common Operational Datasets - Administrative Bo
 
 ```shell
     uv sync
-    source .venv/bin/activate
-    pre-commit install
+    uv run pre-commit install
 ```
 
 For the script to run, you will need to have a file called `.hdx_configuration.yaml` in your home directory containing your HDX key, e.g.:

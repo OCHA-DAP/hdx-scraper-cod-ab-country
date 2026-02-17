@@ -131,7 +131,7 @@ columns = [
 ]
 
 
-def merge_unique(df1: DataFrame, df2: DataFrame, columns: list[str]) -> DataFrame:
+def _merge_unique(df1: DataFrame, df2: DataFrame, columns: list[str]) -> DataFrame:
     """Merge two dataframes and keep only unique rows from df1."""
     merged_df = df1.merge(df2[columns], on=columns, how="left", indicator=True)
     return merged_df[merged_df["_merge"] == "left_only"].drop(columns=["_merge"])
@@ -143,7 +143,7 @@ def refactor(output_file: Path) -> None:
     iso3_exclude_version = [x.replace("_V", "v") for x in iso3_exclude_cfg if "_V" in x]
     df = read_parquet(output_file)
     df = df.rename(columns=column_rename)
-    df_extra = merge_unique(DataFrame(extra_rows), df, ["country_iso3", "version"])
+    df_extra = _merge_unique(DataFrame(extra_rows), df, ["country_iso3", "version"])
     df = concat([df, df_extra], ignore_index=True)
     for key, value in source_updates.items():
         df.loc[df["country_iso3"] == key, "source"] = value

@@ -1,13 +1,11 @@
 import logging
-from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from ...arcgis import client_get
+from ...arcgis import client_get, is_recently_updated
 from ...config import ARCGIS_SERVICE_URL, ATTEMPT, WAIT
 from .download import download_feature
-from .metadata import parse_metadata_datetimes
 
 logger = logging.getLogger(__name__)
 
@@ -31,11 +29,9 @@ def download_boundaries(
         layer for layer in response_layers["layers"] if layer["type"] == "Feature Layer"
     ]
     if not force:
-        cutoff_utc = datetime.now(UTC) - timedelta(days=1.5)
         any_modified = any(
-            dt > cutoff_utc
+            is_recently_updated(f"{url}/{layer['id']}", params, url)
             for layer in feature_layers
-            for dt in parse_metadata_datetimes(f"{url}/{layer['id']}", params, url)
         )
         if not any_modified:
             logger.info(

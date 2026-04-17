@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from shutil import rmtree
 
@@ -20,6 +21,7 @@ from .download.metadata import download_metadata
 from .geodata import formats
 
 cwd = Path(__file__).parent
+logger = logging.getLogger(__name__)
 
 _USER_AGENT_LOOKUP = "hdx-scraper-cod-ab"
 _SAVED_DATA_DIR = f"{TEMP_DIR}/saved_data"
@@ -32,41 +34,54 @@ def _create_country_dataset(  # noqa: PLR0913
     token: str,
     iso3: str,
     version: str,
-    force: bool = False,  # noqa: FBT001, FBT002
+    force_download: bool = False,  # noqa: FBT001, FBT002
+    force_upload: bool = False,  # noqa: FBT001, FBT002
     global_metadata_updated: bool = False,  # noqa: FBT001, FBT002
+    test: bool = False,  # noqa: FBT001, FBT002
 ) -> None:
     """Create a dataset for a country."""
     iso3_dir = data_dir / "boundaries" / iso3.lower()
     rmtree(iso3_dir, ignore_errors=True)
     iso3_dir.mkdir(parents=True)
-    download_boundaries(iso3_dir, token, iso3, version, force=force)
+    download_boundaries(iso3_dir, token, iso3, version, force=force_download)
     has_downloads = any(iso3_dir.glob("*.parquet"))
     if not has_downloads:
         rmtree(iso3_dir)
-        if not (force or global_metadata_updated):
+        if not (force_download or global_metadata_updated):
             return
     else:
         formats.main(iso3_dir, iso3)
     metadata = get_metadata(data_dir, iso3, version)
-    dataset = generate_dataset(iso3_dir, iso3, metadata, with_resources=has_downloads)
+    dataset = generate_dataset(
+        iso3_dir,
+        iso3,
+        metadata,
+        with_resources=has_downloads,
+        force_upload=force_upload,
+    )
     if dataset:
         dataset.update_from_yaml(path=str(cwd / "config/hdx_dataset_static.yaml"))
-        dataset.create_in_hdx(
-            remove_additional_resources=has_downloads,
-            match_resource_order=False,
-            updated_by_script=_UPDATED_BY_SCRIPT,
-            batch=info["batch"],
-        )
-    if has_downloads:
+        if test:
+            logger.info("Test mode: skipping HDX upload for %s", iso3)
+        else:
+            dataset.create_in_hdx(
+                remove_additional_resources=has_downloads,
+                match_resource_order=False,
+                updated_by_script=_UPDATED_BY_SCRIPT,
+                batch=info["batch"],
+            )
+    if has_downloads and not test:
         rmtree(iso3_dir)
 
 
-def main(
+def main(  # noqa: PLR0913
     iso3_include: str = "",
     iso3_exclude: str = "",
     save: bool = True,  # noqa: FBT001, FBT002
     use_saved: bool = False,  # noqa: FBT001, FBT002
-    force: bool = False,  # noqa: FBT001, FBT002
+    force_download: bool = False,  # noqa: FBT001, FBT002
+    force_upload: bool = False,  # noqa: FBT001, FBT002
+    test: bool = False,  # noqa: FBT001, FBT002
 ) -> None:
     """Generate datasets and create them in HDX."""
     Configuration.read()
@@ -100,10 +115,13 @@ def main(
                 token,
                 iso3,
                 version,
-                force=force,
+                force_download=force_download or test,
+                force_upload=force_upload,
                 global_metadata_updated=global_metadata_updated,
+                test=test,
             )
-        rmtree(data_dir)
+        if not test and not (save or use_saved):
+            rmtree(data_dir)
 
 
 if __name__ == "__main__":

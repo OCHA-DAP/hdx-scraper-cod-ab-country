@@ -42,3 +42,11 @@ def download_boundaries(
         feature_url = f"{url}/{layer['id']}"
         response_feature = client_get(feature_url, params).json()
         download_feature(data_dir, feature_url, params, response_feature)
+    tables = response_layers.get("tables", [])
+    if tables:
+        tables_dir = data_dir / "tables"
+        tables_dir.mkdir(parents=True, exist_ok=True)
+        for layer in tables:
+            table_url = f"{url}/{layer['id']}"
+            response_table = client_get(table_url, params).json()
+            download_feature(tables_dir, table_url, params, response_table)

@@ -134,6 +134,7 @@ def _add_resources(
     iso3: str,
     metadata: dict,
     dataset: Dataset,
+    force_upload: bool = False,  # noqa: FBT001, FBT002
 ) -> Dataset:
     """Add resources to a dataset."""
     admin_level = metadata["admin_level_max"]
@@ -147,7 +148,7 @@ def _add_resources(
             resource_data["p_coded"] = "True"
         resource = Resource(resource_data)
         file_to_upload = iso3_dir / resource_name
-        if ext in ("gdb.zip", "shp.zip"):
+        if ext in ("gdb.zip", "shp.zip") and not force_upload:
             file_to_upload = compare_geodata(
                 iso3_dir / resource_name,
                 dataset.get_name_or_id(),
@@ -164,6 +165,7 @@ def generate_dataset(
     iso3: str,
     metadata: dict,
     with_resources: bool = True,  # noqa: FBT001, FBT002
+    force_upload: bool = False,  # noqa: FBT001, FBT002
 ) -> Dataset | None:
     """Generate a dataset for a country."""
     dataset = _initialize_dataset(iso3)
@@ -175,4 +177,4 @@ def generate_dataset(
     dataset["notes"] = _get_notes(iso3, metadata)
     if not with_resources:
         return dataset
-    return _add_resources(iso3_dir, iso3, metadata, dataset)
+    return _add_resources(iso3_dir, iso3, metadata, dataset, force_upload=force_upload)

@@ -5,7 +5,7 @@ from urllib.parse import urlencode
 
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from ...config import ATTEMPT, OBJECTID, WAIT
+from ...config import ATTEMPT, GLOBALID, OBJECTID, WAIT
 
 
 def _parse_fields(fields: list) -> tuple[str, str]:
@@ -14,7 +14,7 @@ def _parse_fields(fields: list) -> tuple[str, str]:
         [
             x["name"]
             for x in fields
-            if x["type"] != OBJECTID
+            if x["type"] not in (OBJECTID, GLOBALID)
             and not x.get("virtual")
             and not x["name"].lower().startswith("objectid")
         ],

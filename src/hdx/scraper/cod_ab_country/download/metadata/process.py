@@ -181,4 +181,3 @@ def refactor(output_file: Path) -> None:
         compression_level=15,
         index=False,
     )
-    output_file.unlink()

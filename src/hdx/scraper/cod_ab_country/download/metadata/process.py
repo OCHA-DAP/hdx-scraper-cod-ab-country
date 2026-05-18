@@ -1,11 +1,13 @@
 # flake8: noqa: E501
+"""Metadata table refactoring and enrichment."""
+
 from datetime import datetime as dt
 from pathlib import Path
 
 from hdx.location.country import Country
 from pandas import DataFrame, concat, read_parquet
 
-from ...config import iso3_exclude_cfg
+from hdx.scraper.cod_ab_country.config import iso3_exclude_cfg
 
 ISO3_LEN = 3
 
@@ -152,7 +154,6 @@ def refactor(output_file: Path) -> None:
     df["country_name"] = df["country_iso3"].apply(Country.get_country_name_from_iso3)
     df["country_iso2"] = df["country_iso3"].apply(Country.get_iso2_from_iso3)
     df[name_columns] = df[name_columns].replace("currently not known", None)
-    df["admin_level_full"] = df["admin_level_full"].replace("Unknown", None)
     df["admin_level_full"] = df["admin_level_full"].fillna(df["admin_level_max"])
     df["admin_level_full"] = df["admin_level_full"].astype("Int32")
     for iso3, version, level in admin_level_full_updates:

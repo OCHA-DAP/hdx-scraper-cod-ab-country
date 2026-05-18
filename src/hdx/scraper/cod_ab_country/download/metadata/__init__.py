@@ -1,9 +1,12 @@
+"""Metadata table download pipeline."""
+
 from pathlib import Path
 from subprocess import run
 from urllib.parse import urlencode
 
-from ...arcgis import client_get
-from ...config import ARCGIS_METADATA_URL, OBJECTID
+from hdx.scraper.cod_ab_country.arcgis import client_get
+from hdx.scraper.cod_ab_country.config import ARCGIS_METADATA_URL, OBJECTID
+
 from .process import refactor
 
 

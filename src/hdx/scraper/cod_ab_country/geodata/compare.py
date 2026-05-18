@@ -1,3 +1,5 @@
+"""GeoPackage comparison against existing HDX resources."""
+
 from filecmp import cmpfiles, dircmp
 from json import loads
 from pathlib import Path
@@ -6,7 +8,7 @@ from subprocess import PIPE, run
 from hdx.data.dataset import Dataset
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from ..config import ATTEMPT, WAIT
+from hdx.scraper.cod_ab_country.config import ATTEMPT, WAIT
 
 
 @retry(stop=stop_after_attempt(ATTEMPT), wait=wait_fixed(WAIT))

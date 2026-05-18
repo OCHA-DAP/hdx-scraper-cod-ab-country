@@ -1,4 +1,6 @@
 # flake8: noqa: E501
+"""HDX dataset generation for COD-AB country data."""
+
 import logging
 from pathlib import Path
 
@@ -83,11 +85,7 @@ def _get_notes(iso3: str, metadata: dict) -> str:
     for level in range(1, admin_levels + 1):
         admin_units = metadata[f"admin_{level}_count"] or ""
         admin_type = metadata[f"admin_{level}_name"] or ""
-        admin_partial = (
-            level > metadata["admin_level_full"]
-            if metadata["admin_level_full"] != "Unknown"
-            else False
-        )
+        admin_partial = level > metadata["admin_level_full"]
         partial_text = ", partial coverage" if admin_partial else ""
         lines.append(
             f"- Admin {level}: {admin_units} {admin_type}{partial_text}",

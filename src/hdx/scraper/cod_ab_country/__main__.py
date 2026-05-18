@@ -1,3 +1,5 @@
+"""COD-AB country scraper pipeline."""
+
 import logging
 from pathlib import Path
 from shutil import rmtree

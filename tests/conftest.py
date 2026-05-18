@@ -1,4 +1,5 @@
 # flake8: noqa: D103, PTH118, SLF001, FBT003, ANN001
+"""Shared pytest fixtures."""
 
 from os.path import join
 

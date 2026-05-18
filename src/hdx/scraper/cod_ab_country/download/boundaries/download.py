@@ -1,11 +1,13 @@
 # ruff: noqa: ERA001
+"""Feature-layer download from ArcGIS REST API."""
+
 from pathlib import Path
 from subprocess import run
 from urllib.parse import urlencode
 
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from ...config import ATTEMPT, GLOBALID, OBJECTID, WAIT
+from hdx.scraper.cod_ab_country.config import ATTEMPT, GLOBALID, OBJECTID, WAIT
 
 
 def _parse_fields(fields: list) -> tuple[str, str]:

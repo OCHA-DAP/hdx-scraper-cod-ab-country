@@ -178,7 +178,8 @@ saved_data/
 
 # Caches
 .ruff_cache
-.claude/
+.claude/*
+!.claude/settings.json
 plans/
 
 # test results

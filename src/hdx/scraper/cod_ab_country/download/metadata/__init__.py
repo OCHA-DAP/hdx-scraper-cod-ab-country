@@ -36,7 +36,7 @@ def download_metadata(data_dir: Path, token: str) -> None:
         "where": "1=1",
     }
     query_url = f"{ARCGIS_METADATA_URL}/query?{urlencode(query)}"
-    output_file = data_dir / "metadata/metadata.parquet"
+    output_file = data_dir / "metadata/metadata_raw.parquet"
     output_file.parent.mkdir(parents=True, exist_ok=True)
     run(
         [

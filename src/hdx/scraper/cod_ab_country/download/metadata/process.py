@@ -5,7 +5,7 @@ from datetime import datetime as dt
 from pathlib import Path
 
 from hdx.location.country import Country
-from pandas import DataFrame, concat, read_parquet
+from pandas import DataFrame, concat, read_parquet, to_numeric
 
 from hdx.scraper.cod_ab_country.config import iso3_exclude_cfg
 
@@ -154,7 +154,9 @@ def refactor(output_file: Path) -> None:
     df["country_name"] = df["country_iso3"].apply(Country.get_country_name_from_iso3)
     df["country_iso2"] = df["country_iso3"].apply(Country.get_iso2_from_iso3)
     df[name_columns] = df[name_columns].replace("currently not known", None)
-    df["admin_level_full"] = df["admin_level_full"].fillna(df["admin_level_max"])
+    df["admin_level_full"] = to_numeric(df["admin_level_full"], errors="coerce").fillna(
+        to_numeric(df["admin_level_max"], errors="coerce")
+    )
     df["admin_level_full"] = df["admin_level_full"].astype("Int32")
     for iso3, version, level in admin_level_full_updates:
         df.loc[
@@ -168,14 +170,14 @@ def refactor(output_file: Path) -> None:
     df = df[~(df["country_iso3"] + df["version"]).isin(iso3_exclude_version)]
     df = df[columns].sort_values(by=["country_iso3", "version"])
     df.to_parquet(
-        output_file.with_stem(output_file.stem + "_all"),
+        output_file.parent / "metadata_all.parquet",
         compression="zstd",
         compression_level=15,
         index=False,
     )
     df = df.drop_duplicates(subset=["country_iso3"], keep="last")
     df.to_parquet(
-        output_file.with_stem(output_file.stem + "_latest"),
+        output_file.parent / "metadata_latest.parquet",
         compression="zstd",
         compression_level=15,
         index=False,

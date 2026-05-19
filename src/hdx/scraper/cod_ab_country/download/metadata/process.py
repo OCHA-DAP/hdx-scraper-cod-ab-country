@@ -1,11 +1,10 @@
 # flake8: noqa: E501
 """Metadata table refactoring and enrichment."""
 
-from datetime import datetime as dt
 from pathlib import Path
 
 from hdx.location.country import Country
-from pandas import DataFrame, concat, read_parquet, to_numeric
+from pandas import read_parquet, to_numeric
 
 from hdx.scraper.cod_ab_country.config import iso3_exclude_cfg
 
@@ -56,31 +55,11 @@ contributor_updates = {
 }
 
 admin_level_full_updates = [
+    ("COD", "v01", 3),
     ("KGZ", "v01", 1),
     ("PHL", "v03", 3),
     ("QAT", "v01", 1),
     ("QAT", "v02", 1),
-]
-
-extra_rows = [
-    {
-        "country_iso3": "CUB",
-        "version": "v01",
-        "admin_level_max": 2,
-        "admin_1_name": "province",
-        "admin_2_name": "municipio",
-        "admin_1_count": 16,
-        "admin_2_count": 168,
-        "date_source": dt.fromisoformat("2017-09-07").date(),
-        "date_updated": dt.fromisoformat("2019-06-21").date(),
-        "date_valid_on": dt.fromisoformat("2019-06-21").date(),
-        "date_reviewed": dt.fromisoformat("2019-06-21").date(),
-        "update_frequency": 1,
-        "source": "www.gadm.org",
-        "contributor": "OCHA Field Information Services Section (FISS)",
-        "methodology_dataset": "downloaded from www.gadm.org",
-        "caveats": "Version history: 21 June 2019 P-coding and administrative hierarchical adjustments to reflect new COD-PS.  \n  \n17 September 2017 Initial upload",
-    },
 ]
 
 name_columns = [
@@ -133,20 +112,12 @@ columns = [
 ]
 
 
-def _merge_unique(df1: DataFrame, df2: DataFrame, columns: list[str]) -> DataFrame:
-    """Merge two dataframes and keep only unique rows from df1."""
-    merged_df = df1.merge(df2[columns], on=columns, how="left", indicator=True)
-    return merged_df[merged_df["_merge"] == "left_only"].drop(columns=["_merge"])
-
-
 def refactor(output_file: Path) -> None:
     """Refactor file."""
     iso3_exclude_all = [x for x in iso3_exclude_cfg if len(x) == ISO3_LEN]
     iso3_exclude_version = [x.replace("_V", "v") for x in iso3_exclude_cfg if "_V" in x]
     df = read_parquet(output_file)
     df = df.rename(columns=column_rename)
-    df_extra = _merge_unique(DataFrame(extra_rows), df, ["country_iso3", "version"])
-    df = concat([df, df_extra], ignore_index=True)
     for key, value in source_updates.items():
         df.loc[df["country_iso3"] == key, "source"] = value
     for key, value in contributor_updates.items():
@@ -164,6 +135,8 @@ def refactor(output_file: Path) -> None:
             "admin_level_full",
         ] = level
     df[count_columns] = df[count_columns].replace("", None).astype("Int32")
+    df["admin_level_max"] = df["admin_level_max"].astype("int32")
+    df["update_frequency"] = df["update_frequency"].astype("int32")
     df = df[df["version"] != ""]
     df = df[df["admin_level_max"].gt(0)]
     df = df[~df["country_iso3"].isin(iso3_exclude_all)]

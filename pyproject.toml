@@ -22,7 +22,7 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["pre-commit", "pytest", "pytest-cov", "ruff", "taskipy"]
+dev = ["openpyxl", "pre-commit", "pytest", "pytest-cov", "ruff", "taskipy"]
 
 [tool.hatch]
 version.source = "uv-dynamic-versioning"

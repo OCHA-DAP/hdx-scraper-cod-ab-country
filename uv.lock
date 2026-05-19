@@ -470,6 +470,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "openpyxl" },
     { name = "pre-commit" },
     { name = "pytest" },
     { name = "pytest-cov" },
@@ -495,6 +496,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "openpyxl" },
     { name = "pre-commit" },
     { name = "pytest" },
     { name = "pytest-cov" },

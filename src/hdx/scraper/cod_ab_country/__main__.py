@@ -17,7 +17,7 @@ from .config import (
     iso3_exclude_cfg,
     iso3_include_cfg,
 )
-from .dataset import generate_dataset
+from .dataset import FORMAT_TYPES, add_boundary_resource, generate_dataset
 from .download.boundaries import download_boundaries
 from .download.metadata import download_metadata
 from .geodata import formats
@@ -30,7 +30,7 @@ _SAVED_DATA_DIR = f"{TEMP_DIR}/saved_data"
 _UPDATED_BY_SCRIPT = "HDX Scraper: COD-AB Country"
 
 
-def _create_country_dataset(  # noqa: PLR0913
+def _create_country_dataset(  # noqa: C901, PLR0912, PLR0913
     info: dict,
     data_dir: Path,
     token: str,
@@ -54,25 +54,40 @@ def _create_country_dataset(  # noqa: PLR0913
     else:
         formats.main(iso3_dir, iso3)
     metadata = get_metadata(data_dir, iso3, version)
-    dataset = generate_dataset(
-        iso3_dir,
-        iso3,
-        metadata,
-        with_resources=has_downloads,
-        force_upload=force_upload,
-    )
-    if dataset:
+    if not has_downloads:
+        dataset = generate_dataset(iso3_dir, iso3, metadata, with_resources=False)
+        if dataset:
+            dataset.update_from_yaml(path=str(cwd / "config/hdx_dataset_static.yaml"))
+            if test:
+                logger.info("Test mode: skipping HDX upload for %s", iso3)
+            else:
+                dataset.create_in_hdx(
+                    remove_additional_resources=False,
+                    match_resource_order=False,
+                    updated_by_script=_UPDATED_BY_SCRIPT,
+                    batch=info["batch"],
+                )
+        return
+    for i, (ext, format_type) in enumerate(FORMAT_TYPES):
+        dataset = generate_dataset(iso3_dir, iso3, metadata, with_resources=False)
+        if not dataset:
+            break
         dataset.update_from_yaml(path=str(cwd / "config/hdx_dataset_static.yaml"))
+        add_boundary_resource(
+            dataset, iso3_dir, iso3, metadata, ext, format_type, force_upload
+        )
+        if i == 0:
+            dataset.preview_resource()
         if test:
-            logger.info("Test mode: skipping HDX upload for %s", iso3)
+            logger.info("Test mode: skipping HDX upload for %s (%s)", iso3, format_type)
         else:
             dataset.create_in_hdx(
-                remove_additional_resources=has_downloads,
+                remove_additional_resources=(i == 0),
                 match_resource_order=False,
                 updated_by_script=_UPDATED_BY_SCRIPT,
                 batch=info["batch"],
             )
-    if has_downloads and not test:
+    if not test:
         rmtree(iso3_dir)
 
 

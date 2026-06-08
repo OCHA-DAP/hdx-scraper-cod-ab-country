@@ -1,9 +1,12 @@
+"""Metadata table download pipeline."""
+
 from pathlib import Path
 from subprocess import run
 from urllib.parse import urlencode
 
-from ...arcgis import client_get
-from ...config import ARCGIS_METADATA_URL, OBJECTID
+from hdx.scraper.cod_ab_country.arcgis import client_get
+from hdx.scraper.cod_ab_country.config import ARCGIS_METADATA_URL, OBJECTID
+
 from .process import refactor
 
 
@@ -33,7 +36,7 @@ def download_metadata(data_dir: Path, token: str) -> None:
         "where": "1=1",
     }
     query_url = f"{ARCGIS_METADATA_URL}/query?{urlencode(query)}"
-    output_file = data_dir / "metadata/metadata.parquet"
+    output_file = data_dir / "metadata/metadata_raw.parquet"
     output_file.parent.mkdir(parents=True, exist_ok=True)
     run(
         [

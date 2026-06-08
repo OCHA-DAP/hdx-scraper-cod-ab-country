@@ -1,3 +1,5 @@
+"""Geospatial format conversion via GDAL."""
+
 import zipfile
 from pathlib import Path
 from shutil import make_archive, rmtree

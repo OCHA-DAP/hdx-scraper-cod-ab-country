@@ -1,3 +1,5 @@
+"""Entry point: re-invokes itself inside a uv-managed virtualenv."""
+
 import runpy
 import subprocess
 import sys

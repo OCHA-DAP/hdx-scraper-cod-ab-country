@@ -1,4 +1,6 @@
 # flake8: noqa: E501
+"""HDX dataset generation for COD-AB country data."""
+
 import logging
 from pathlib import Path
 
@@ -6,13 +8,14 @@ from hdx.data.dataset import Dataset
 from hdx.data.organization import Organization
 from hdx.data.resource import Resource
 from hdx.location.country import Country
+from pandas import isna
 
 from .config import OCHA_ORG_NAME
 from .geodata.compare import compare_geodata
 
 logger = logging.getLogger(__name__)
 
-_format_types = [
+FORMAT_TYPES = [
     ("gdb.zip", "Geodatabase"),
     ("shp.zip", "SHP"),
     ("geojson.zip", "GeoJSON"),
@@ -81,13 +84,17 @@ def _get_notes(iso3: str, metadata: dict) -> str:
         ],
     )
     for level in range(1, admin_levels + 1):
-        admin_units = metadata[f"admin_{level}_count"] or ""
-        admin_type = metadata[f"admin_{level}_name"] or ""
-        admin_partial = (
-            level > metadata["admin_level_full"]
-            if metadata["admin_level_full"] != "Unknown"
-            else False
+        admin_units = (
+            ""
+            if isna(metadata[f"admin_{level}_count"])
+            else metadata[f"admin_{level}_count"]
         )
+        admin_type = (
+            ""
+            if isna(metadata[f"admin_{level}_name"])
+            else metadata[f"admin_{level}_name"]
+        )
+        admin_partial = level > metadata["admin_level_full"]
         partial_text = ", partial coverage" if admin_partial else ""
         lines.append(
             f"- Admin {level}: {admin_units} {admin_type}{partial_text}",
@@ -129,35 +136,34 @@ def _get_notes(iso3: str, metadata: dict) -> str:
     return "  \n".join(lines)
 
 
-def _add_resources(
+def add_boundary_resource(  # noqa: PLR0913
+    dataset: Dataset,
     iso3_dir: Path,
     iso3: str,
     metadata: dict,
-    dataset: Dataset,
+    ext: str,
+    format_type: str,
     force_upload: bool = False,  # noqa: FBT001, FBT002
-) -> Dataset:
-    """Add resources to a dataset."""
+) -> None:
+    """Add a single boundary format resource to a dataset."""
     admin_level = metadata["admin_level_max"]
     country_name = Country.get_country_name_from_iso3(iso3)
     admin_level_range = "0" if admin_level == 0 else f"0-{admin_level}"
-    for ext, format_type in _format_types:
-        resource_name = f"{iso3.lower()}_admin_boundaries.{ext}"
-        resource_desc = f"{country_name} administrative level {admin_level_range} boundaries (COD-AB), {format_type}"
-        resource_data = {"name": resource_name, "description": resource_desc}
-        if admin_level > 0:
-            resource_data["p_coded"] = "True"
-        resource = Resource(resource_data)
-        file_to_upload = iso3_dir / resource_name
-        if ext in ("gdb.zip", "shp.zip") and not force_upload:
-            file_to_upload = compare_geodata(
-                iso3_dir / resource_name,
-                dataset.get_name_or_id(),
-            )
-        resource.set_file_to_upload(file_to_upload)
-        resource.set_format(format_type)
-        dataset.add_update_resource(resource)
-    dataset.preview_resource()
-    return dataset
+    resource_name = f"{iso3.lower()}_admin_boundaries.{ext}"
+    resource_desc = f"{country_name} administrative level {admin_level_range} boundaries (COD-AB), {format_type}"
+    resource_data = {"name": resource_name, "description": resource_desc}
+    if admin_level > 0:
+        resource_data["p_coded"] = "True"
+    resource = Resource(resource_data)
+    file_to_upload = iso3_dir / resource_name
+    if ext in ("gdb.zip", "shp.zip") and not force_upload:
+        file_to_upload = compare_geodata(
+            iso3_dir / resource_name,
+            dataset.get_name_or_id(),
+        )
+    resource.set_file_to_upload(file_to_upload)
+    resource.set_format(format_type)
+    dataset.add_update_resource(resource)
 
 
 def generate_dataset(
@@ -177,4 +183,9 @@ def generate_dataset(
     dataset["notes"] = _get_notes(iso3, metadata)
     if not with_resources:
         return dataset
-    return _add_resources(iso3_dir, iso3, metadata, dataset, force_upload=force_upload)
+    for ext, format_type in FORMAT_TYPES:
+        add_boundary_resource(
+            dataset, iso3_dir, iso3, metadata, ext, format_type, force_upload
+        )
+    dataset.preview_resource()
+    return dataset

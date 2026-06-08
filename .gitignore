@@ -178,9 +178,11 @@ saved_data/
 
 # Caches
 .ruff_cache
-.claude/settings.local.json
+.claude/
 plans/
 
 # test results
 test-results.xml
 coverage.lcov
+
+tmp/

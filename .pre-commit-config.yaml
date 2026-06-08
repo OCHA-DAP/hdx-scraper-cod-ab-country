@@ -1,10 +1,10 @@
 repos:
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.10.3
+    rev: 0.11.19
     hooks:
       - id: uv-sync
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.1
+    rev: v0.15.16
     hooks:
       - id: ruff-format
       - id: ruff-check

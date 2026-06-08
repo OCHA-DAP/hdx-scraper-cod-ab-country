@@ -1,10 +1,13 @@
+"""Boundary layer download pipeline."""
+
 import logging
 from pathlib import Path
 
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-from ...arcgis import client_get, is_recently_updated
-from ...config import ARCGIS_SERVICE_URL, ATTEMPT, WAIT
+from hdx.scraper.cod_ab_country.arcgis import client_get, is_recently_updated
+from hdx.scraper.cod_ab_country.config import ARCGIS_SERVICE_URL, ATTEMPT, WAIT
+
 from .download import download_feature
 
 logger = logging.getLogger(__name__)

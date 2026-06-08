@@ -1,3 +1,5 @@
+"""Post-processing of downloaded boundary parquet files."""
+
 from pathlib import Path
 from subprocess import run
 

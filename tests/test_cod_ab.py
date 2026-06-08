@@ -1,5 +1,6 @@
 # flake8: noqa: S101, PTH118, PTH207
 # ruff: noqa: ARG002, PLR2004
+"""Integration tests for the COD-AB country pipeline."""
 
 from datetime import date
 from glob import glob

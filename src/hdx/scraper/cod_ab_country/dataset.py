@@ -77,30 +77,35 @@ def _get_notes(iso3: str, metadata: dict) -> str:
     lines = [
         f"{country_name} administrative level {admin_level_range} boundaries (COD-AB) dataset version {metadata['version'][1:]}.",
     ]
-    lines.extend(
-        [
-            "",
-            f"This dataset is structured into {admin_levels} level{levels_plural}:",
-        ],
-    )
-    for level in range(1, admin_levels + 1):
-        admin_units = (
-            ""
-            if isna(metadata[f"admin_{level}_count"])
-            else metadata[f"admin_{level}_count"]
+    if admin_levels == 0:
+        lines.extend(
+            ["", "This dataset contains the national boundary only (admin level 0)."]
         )
-        admin_type = (
-            ""
-            if isna(metadata[f"admin_{level}_name"])
-            else metadata[f"admin_{level}_name"]
+    else:
+        lines.extend(
+            [
+                "",
+                f"This dataset is structured into {admin_levels} level{levels_plural}:",
+            ],
         )
-        admin_partial = level > metadata["admin_level_full"]
-        partial_text = ", partial coverage" if admin_partial else ""
-        lines.append(
-            f"- Admin {level}: {admin_units} {admin_type}{partial_text}",
-        )
+        for level in range(1, admin_levels + 1):
+            admin_units = (
+                ""
+                if isna(metadata[f"admin_{level}_count"])
+                else metadata[f"admin_{level}_count"]
+            )
+            admin_type = (
+                ""
+                if isna(metadata[f"admin_{level}_name"])
+                else metadata[f"admin_{level}_name"]
+            )
+            admin_partial = level > metadata["admin_level_full"]
+            partial_text = ", partial coverage" if admin_partial else ""
+            lines.append(
+                f"- Admin {level}: {admin_units} {admin_type}{partial_text}",
+            )
     admin_notes = metadata["admin_notes"]
-    if admin_notes:
+    if admin_notes and not isna(admin_notes):
         lines.extend(["", "", f"Note: {admin_notes}"])
     lines.extend(["", "", "Dates associated with this dataset:"])
     date_format = "%d %B %Y"

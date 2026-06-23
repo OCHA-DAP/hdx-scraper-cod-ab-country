@@ -119,10 +119,8 @@ def main(  # noqa: PLR0913
         data_dir.mkdir(parents=True, exist_ok=True)
         token = generate_token()
         download_metadata(data_dir, token)
-        if metadata_only:
-            return
         params = {"f": "json", "token": token}
-        global_metadata_updated = is_recently_updated(
+        global_metadata_updated = metadata_only or is_recently_updated(
             ARCGIS_METADATA_URL, params, ARCGIS_METADATA_SERVICE_URL
         )
         layer_list = get_layer_list(data_dir)

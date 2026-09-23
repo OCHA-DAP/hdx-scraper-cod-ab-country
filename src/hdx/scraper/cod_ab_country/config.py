@@ -49,6 +49,10 @@ EXPIRATION = int(getenv("EXPIRATION", "1440"))  # minutes (1 day)
 
 ISO3_EXCLUDE_DEFAULTS = "COL,ECU"
 
+admin_level_full_overrides = {
+    "QAT": 3,
+}
+
 TEMP_DIR = getenv("TEMP_DIR", ".")
 
 iso3_include_cfg = [

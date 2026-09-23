@@ -24,7 +24,7 @@ from .config import (
 logger = logging.getLogger(__name__)
 
 _DATE_LEN = 8
-_CUTOFF_DAYS = 1.5
+_CUTOFF_DAYS = 3
 _DATE_TIME_PAIRS = [
     ("CreaDate", "CreaTime"),
     ("SyncDate", "SyncTime"),

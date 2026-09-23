@@ -26,10 +26,8 @@ def download_boundaries(
     url = f"{ARCGIS_SERVICE_URL}/cod_ab_{iso3.lower()}_{version}/FeatureServer"
     response_layers = client_get(url, params).json()
     if "layers" not in response_layers:
-        logger.warning(
-            "Skipping %s %s: no layers found in ArcGIS response", iso3, version
-        )
-        return
+        msg = f"No layers found in ArcGIS response for {iso3} {version}"
+        raise ValueError(msg)
     feature_layers = [
         layer for layer in response_layers["layers"] if layer["type"] == "Feature Layer"
     ]

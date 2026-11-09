@@ -39,6 +39,7 @@ def client_get(url: str, params: dict | None = None) -> Response:
         return client.get(url, params=params)
 
 
+@retry(stop=stop_after_attempt(ATTEMPT), wait=wait_fixed(WAIT))
 def generate_token() -> str:
     """Generate a token for ArcGIS Server."""
     url = f"{ARCGIS_SERVER}/portal/sharing/rest/generateToken"
@@ -50,8 +51,9 @@ def generate_token() -> str:
         "f": "json",
     }
     with Client(http2=True) as client:
-        r = client.post(url, data=data).json()
-        return r["token"]
+        r = client.post(url, data=data)
+        r.raise_for_status()
+        return r.json()["token"]
 
 
 def get_layer_list(data_dir: Path) -> list[tuple[str, str]]:
